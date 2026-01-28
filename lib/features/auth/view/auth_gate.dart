@@ -1,0 +1,39 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:investify/features/auth/view/login_screen.dart';
+import 'package:investify/features/auth/view/verify_email.dart';
+import 'package:investify/features/home/view/home_screen.dart';
+
+/// Auth gate that routes users based on authentication state
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Show loading while checking auth state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CupertinoActivityIndicator()),
+          );
+        }
+
+        // User is not logged in
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const LoginScreen();
+        }
+
+        // User is logged in but email not verified
+        if (!snapshot.data!.emailVerified) {
+          return const VerifyEmailScreen();
+        }
+
+        // User is logged in and email is verified
+        return const HomeScreen();
+      },
+    );
+  }
+}

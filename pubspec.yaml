@@ -1,0 +1,55 @@
+name: investify
+description: "A new Flutter project."
+
+publish_to: 'none'
+#========control your version here
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+#=====Packages here
+dependencies:
+  flutter:
+    sdk: flutter
+
+  
+  
+  cupertino_icons: ^1.0.8
+  iconsax:
+  firebase_core:
+  firebase_auth:
+  device_preview:
+  file_picker:
+  intl:
+  http:
+  flutter_native_splash:
+  get:
+  shared_preferences:
+  lottie:
+  smooth_page_indicator:
+  url_launcher:
+  toast:
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+
+# ==========Assets and font here
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/logos/
+    - assets/videos/
+
+  fonts:
+    - family: 'poppins'
+      fonts:
+        - asset: assets/fonts/grift-medium.ttf
+  
+
