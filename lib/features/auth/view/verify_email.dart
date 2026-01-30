@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
-import 'package:investify/features/home/view/home_screen.dart';
+import 'package:investify/features/home/view/main_screen.dart';
 import 'package:investify/features/settings/controller/theme_controller.dart';
 import 'package:investify/utils/sizes/size.dart';
 import 'package:investify/utils/theme/app_colors.dart';
@@ -59,7 +59,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           backgroundColor: Colors.green.shade100,
           colorText: Colors.green.shade900,
         );
-        Get.offAll(() => const HomeScreen());
+        Get.offAll(() => const MainScreen());
       }
     } catch (e) {
       debugPrint('VerifyEmailScreen: Error checking verification: $e');
@@ -173,7 +173,7 @@ class _VerifyEmailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final email = FirebaseAuth.instance.currentUser?.email ?? '';
-    
+
     return Container(
       width: 360,
       padding: const EdgeInsets.all(24),
