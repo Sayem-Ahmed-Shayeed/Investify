@@ -42,10 +42,10 @@ class PostIdeaScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-      
+
         child: Column(
           children: [
             Expanded(

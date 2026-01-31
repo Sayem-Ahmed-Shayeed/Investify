@@ -35,12 +35,6 @@ class PostIdeaController extends GetxController {
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.single;
 
-        // Check file size (50MB limit)
-        if (file.size > 50 * 1024 * 1024) {
-          _showMessage('Error', 'Video must be under 50MB', isError: true);
-          return;
-        }
-
         videoPitchPath.value = file.path;
         videoPitchFileName.value = file.name;
         _showMessage('Success', 'Video selected: ${file.name}');

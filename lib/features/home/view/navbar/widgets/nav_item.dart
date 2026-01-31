@@ -21,7 +21,7 @@ class NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final navBarController = Get.find<NavBarController>();
     final theme = Theme.of(context);
-    final selectedColor = Colors.teal;
+    final selectedColor = theme.colorScheme.primary;
     final unselectedColor = theme.colorScheme.outline;
 
     return GestureDetector(

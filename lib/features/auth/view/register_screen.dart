@@ -20,6 +20,7 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -35,9 +36,7 @@ class RegisterScreen extends StatelessWidget {
           Obx(
             () => IconButton(
               icon: Icon(
-                themeController.isDarkMode
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
+                themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 color: isDark
                     ? AppColors.textPrimaryDark
                     : AppColors.textPrimaryLight,
@@ -66,7 +65,11 @@ class RegisterScreen extends StatelessWidget {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: 20),
-              child: _RegisterCard(controller: controller, theme: theme, isDark: isDark),
+              child: _RegisterCard(
+                controller: controller,
+                theme: theme,
+                isDark: isDark,
+              ),
             ),
           ),
         ),
@@ -105,7 +108,9 @@ class _RegisterCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
+              color: isDark
+                  ? AppColors.inputFillDark
+                  : AppColors.inputFillLight,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -115,10 +120,7 @@ class _RegisterCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
-          Text(
-            "Create Account",
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text("Create Account", style: theme.textTheme.headlineMedium),
           const SizedBox(height: RomRomSizes.spaceBetweenItem),
           Text(
             "Join us to start your investment journey",
@@ -201,8 +203,9 @@ class _RegisterCard extends StatelessWidget {
             height: 50,
             child: Obx(
               () => ElevatedButton(
-                onPressed:
-                    controller.isLoading.value ? null : controller.register,
+                onPressed: controller.isLoading.value
+                    ? null
+                    : controller.register,
                 child: controller.isLoading.value
                     ? const SizedBox(
                         height: 20,
@@ -264,10 +267,7 @@ class _NidCardPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "NID Card Image",
-          style: theme.textTheme.titleMedium,
-        ),
+        Text("NID Card Image", style: theme.textTheme.titleMedium),
         const SizedBox(height: RomRomSizes.small),
         Obx(
           () => GestureDetector(
@@ -290,10 +290,7 @@ class _NidCardPicker extends StatelessWidget {
               child: controller.nidCardFileName.value != null
                   ? Row(
                       children: [
-                        Icon(
-                          Icons.image,
-                          color: theme.iconTheme.color,
-                        ),
+                        Icon(Icons.image, color: theme.iconTheme.color),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -313,10 +310,7 @@ class _NidCardPicker extends StatelessWidget {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.upload_file,
-                          color: theme.iconTheme.color,
-                        ),
+                        Icon(Icons.upload_file, color: theme.iconTheme.color),
                         const SizedBox(width: 8),
                         Text(
                           "Tap to upload NID Card",

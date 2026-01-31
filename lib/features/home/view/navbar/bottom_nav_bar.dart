@@ -36,6 +36,7 @@ class BottomNavBar extends StatelessWidget {
                 label: 'Calendar',
                 clickedTabIndex: 3,
               ),
+              NavItem(icon: Icons.person, label: 'Profile', clickedTabIndex: 4),
             ],
           ),
         ),
