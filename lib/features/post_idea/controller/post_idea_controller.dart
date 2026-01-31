@@ -1,24 +1,34 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/utils/sizes/size.dart';
 
-import '../model/post_idea_model.dart';
+import '../services/media_upload_service.dart';
+import '../services/post_service.dart';
 
 class PostIdeaController extends GetxController {
   final content = ''.obs;
 
-  // Video pitch
-  final videoPitchPath = Rxn<String>();
+  // Video pitch - store both bytes and name for web support
+  final videoPitchBytes = Rxn<Uint8List>();
   final videoPitchFileName = Rxn<String>();
 
-  // Gallery images (max recommended: 5)
-  final galleryImages = <String>[].obs;
+  // Gallery images - store bytes and names for web support
+  final galleryImageBytes = <Uint8List>[].obs;
+  final galleryImageNames = <String>[].obs;
 
   // UI state
   final isPublishing = false.obs;
   final isSavingDraft = false.obs;
+  final uploadProgress = 0.0.obs;
+  final uploadStatus = ''.obs;
+
+  // Services
+  final _mediaUploadService = MediaUploadService();
+  final _postService = PostService();
 
   /// Update content text
   void updateContent(String value) {
@@ -30,14 +40,19 @@ class PostIdeaController extends GetxController {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.video,
         allowMultiple: false,
+        withData: true, // Important for web - loads bytes
       );
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.single;
 
-        videoPitchPath.value = file.path;
-        videoPitchFileName.value = file.name;
-        _showMessage('Success', 'Video selected: ${file.name}');
+        if (file.bytes != null) {
+          videoPitchBytes.value = file.bytes;
+          videoPitchFileName.value = file.name;
+          _showMessage('Success', 'Video selected: ${file.name}');
+        } else {
+          _showMessage('Error', 'Could not load video data', isError: true);
+        }
       }
     } catch (e) {
       _showMessage('Error', 'Error picking video: $e', isError: true);
@@ -46,7 +61,7 @@ class PostIdeaController extends GetxController {
 
   /// Remove selected video
   void removeVideo() {
-    videoPitchPath.value = null;
+    videoPitchBytes.value = null;
     videoPitchFileName.value = null;
   }
 
@@ -56,12 +71,14 @@ class PostIdeaController extends GetxController {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
         allowMultiple: true,
+        withData: true, // Important for web - loads bytes
       );
 
       if (result != null && result.files.isNotEmpty) {
         for (final file in result.files) {
-          if (file.path != null && !galleryImages.contains(file.path)) {
-            galleryImages.add(file.path!);
+          if (file.bytes != null) {
+            galleryImageBytes.add(file.bytes!);
+            galleryImageNames.add(file.name);
           }
         }
         _showMessage('Success', '${result.files.length} image(s) added');
@@ -73,10 +90,14 @@ class PostIdeaController extends GetxController {
 
   /// Remove image from gallery at index
   void removeImage(int index) {
-    if (index >= 0 && index < galleryImages.length) {
-      galleryImages.removeAt(index);
+    if (index >= 0 && index < galleryImageBytes.length) {
+      galleryImageBytes.removeAt(index);
+      galleryImageNames.removeAt(index);
     }
   }
+
+  // Legacy getter for UI compatibility
+  List<String> get galleryImages => galleryImageNames;
 
   /// Validate post before saving/publishing
   String? _validatePost() {
@@ -95,16 +116,28 @@ class PostIdeaController extends GetxController {
     }
 
     isSavingDraft.value = true;
+    uploadStatus.value = 'Uploading media...';
 
     try {
-      final post = _createPostModel(isDraft: true);
-      await _uploadToDatabase(post);
+      // Upload media files
+      final uploadedMedia = await _uploadAllMedia();
+
+      // Create post via API
+      uploadStatus.value = 'Saving draft...';
+      await _postService.createPost(
+        caption: content.value.trim(),
+        media: uploadedMedia,
+        isDraft: true,
+      );
 
       isSavingDraft.value = false;
+      uploadStatus.value = '';
       _showMessage('Success', 'Draft saved successfully!');
+      _clearForm();
       Get.back();
     } catch (e) {
       isSavingDraft.value = false;
+      uploadStatus.value = '';
       _showMessage('Error', 'Failed to save draft: $e', isError: true);
     }
   }
@@ -118,66 +151,84 @@ class PostIdeaController extends GetxController {
     }
 
     isPublishing.value = true;
+    uploadStatus.value = 'Uploading media...';
 
     try {
-      final post = _createPostModel(isDraft: false);
-      await _uploadToDatabase(post);
+      // Upload media files
+      final uploadedMedia = await _uploadAllMedia();
+
+      // Create post via API
+      uploadStatus.value = 'Publishing...';
+      await _postService.createPost(
+        caption: content.value.trim(),
+        media: uploadedMedia,
+        isDraft: false,
+      );
 
       isPublishing.value = false;
+      uploadStatus.value = '';
       _showMessage('Success', 'Post published successfully!');
       _clearForm();
       Get.back();
     } catch (e) {
       isPublishing.value = false;
+      uploadStatus.value = '';
       _showMessage('Error', 'Failed to publish post: $e', isError: true);
     }
   }
 
-  /// Create post model from current state
-  PostIdeaModel _createPostModel({required bool isDraft}) {
-    return PostIdeaModel(
-      content: content.value.trim(),
-      videoPitchPath: videoPitchPath.value,
-      galleryImages: List<String>.from(galleryImages),
-      isDraft: isDraft,
-      createdAt: DateTime.now(),
-      userId: FirebaseAuth.instance.currentUser?.uid,
-    );
-  }
+  /// Upload all media (video + images) and return UploadedMedia list
+  Future<List<UploadedMedia>> _uploadAllMedia() async {
+    final uploadedMedia = <UploadedMedia>[];
 
-  /// Upload post data to database
-  /// TODO: Implement actual Firebase Firestore/Storage upload when configured
-  Future<void> _uploadToDatabase(PostIdeaModel post) async {
-    debugPrint('Uploading post to database...');
-    debugPrint('Post data: ${post.toJson()}');
-
-    // Simulate network delay for now
-    await Future.delayed(const Duration(seconds: 1));
-
-    // TODO: Upload video to Firebase Storage if exists
-    if (post.videoPitchPath != null) {
-      debugPrint('Would upload video: ${post.videoPitchPath}');
-      // final videoUrl = await _uploadFileToStorage(post.videoPitchPath!, 'videos');
+    // Upload video if exists
+    if (videoPitchBytes.value != null && videoPitchFileName.value != null) {
+      uploadStatus.value = 'Uploading video...';
+      try {
+        final uploadFile = UploadFile(
+          name: videoPitchFileName.value!,
+          bytes: videoPitchBytes.value!,
+        );
+        final uploadedVideo = await _mediaUploadService.uploadVideo(uploadFile);
+        uploadedMedia.add(uploadedVideo);
+        debugPrint('✅ Video uploaded: ${uploadedVideo.url}');
+      } catch (e) {
+        debugPrint('❌ Video upload failed: $e');
+        rethrow;
+      }
     }
 
-    // TODO: Upload gallery images to Firebase Storage
-    for (final imagePath in post.galleryImages) {
-      debugPrint('Would upload image: $imagePath');
-      // final imageUrl = await _uploadFileToStorage(imagePath, 'images');
+    // Upload images if exist
+    if (galleryImageBytes.isNotEmpty) {
+      uploadStatus.value = 'Uploading images (${galleryImageBytes.length})...';
+      try {
+        final uploadFiles = <UploadFile>[];
+        for (int i = 0; i < galleryImageBytes.length; i++) {
+          uploadFiles.add(
+            UploadFile(name: galleryImageNames[i], bytes: galleryImageBytes[i]),
+          );
+        }
+        final uploadedImages = await _mediaUploadService.uploadImages(
+          uploadFiles,
+        );
+        uploadedMedia.addAll(uploadedImages);
+        debugPrint('✅ ${uploadedImages.length} images uploaded');
+      } catch (e) {
+        debugPrint('❌ Image upload failed: $e');
+        rethrow;
+      }
     }
 
-    // TODO: Save post document to Firestore
-    // await FirebaseFirestore.instance.collection('posts').add(post.toJson());
-
-    debugPrint('Post upload complete (simulated)');
+    return uploadedMedia;
   }
 
   /// Clear form after successful publish
   void _clearForm() {
     content.value = '';
-    videoPitchPath.value = null;
+    videoPitchBytes.value = null;
     videoPitchFileName.value = null;
-    galleryImages.clear();
+    galleryImageBytes.clear();
+    galleryImageNames.clear();
   }
 
   /// Show snackbar message

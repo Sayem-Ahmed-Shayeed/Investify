@@ -29,50 +29,48 @@ class NavItem extends StatelessWidget {
         navBarController.onTabChanged(clickedTabIndex);
       },
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: Obx(() {
-          final isSelected =
-              navBarController.currentTabIndex.value == clickedTabIndex;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    icon,
-                    size: 24,
-                    color: isSelected ? selectedColor : unselectedColor,
-                  ),
-                  if (showBadge)
-                    Positioned(
-                      right: -4,
-                      top: -4,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+      child: Obx(() {
+        final isSelected =
+            navBarController.currentTabIndex.value == clickedTabIndex;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
                   color: isSelected ? selectedColor : unselectedColor,
                 ),
+                if (showBadge)
+                  Positioned(
+                    right: -4,
+                    top: -4,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? selectedColor : unselectedColor,
               ),
-            ],
-          );
-        }),
-      ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        );
+      }),
     );
   }
 }
