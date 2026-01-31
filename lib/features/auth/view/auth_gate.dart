@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:investify/features/auth/view/login_screen.dart';
 import 'package:investify/features/auth/view/verify_email.dart';
-import 'package:investify/features/home/view/home_screen.dart';
+import 'package:investify/features/home/view/main_screen.dart';
 
 /// Auth gate that routes users based on authentication state
 class AuthGate extends StatelessWidget {
@@ -32,7 +32,7 @@ class AuthGate extends StatelessWidget {
         }
 
         // User is logged in and email is verified
-        return const HomeScreen();
+        return const MainScreen();
       },
     );
   }
