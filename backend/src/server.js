@@ -11,25 +11,21 @@ const { verifyFirebaseToken } = require('./middleware/auth.middleware');
 
 const app = express();
 
-// Security middleware
 app.use(helmet());
 
-// Rate limiting - prevent brute force attacks
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: { error: 'Too many requests, please try again later.' }
 });
 app.use(limiter);
 
-// More strict rate limiting for upload endpoints
 const uploadLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50, // limit each IP to 50 uploads per hour
+  windowMs: 60 * 60 * 1000,
+  max: 50,
   message: { error: 'Upload limit reached. Please try again later.' }
 });
 
-// CORS configuration - only allow your app
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -38,25 +34,20 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Protected routes - require Firebase authentication
 app.use('/api/uploads', verifyFirebaseToken, uploadLimiter, uploadRoutes);
 app.use('/api/posts', verifyFirebaseToken, postRoutes);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
@@ -66,7 +57,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });

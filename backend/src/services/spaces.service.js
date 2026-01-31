@@ -2,11 +2,6 @@ const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/cl
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { v4: uuidv4 } = require('uuid');
 
-/**
- * DigitalOcean Spaces Service
- * Uses AWS SDK v3 since Spaces is S3-compatible
- * All credentials are stored in environment variables - NEVER in code
- */
 class SpacesService {
   constructor() {
     this.client = new S3Client({
@@ -23,16 +18,7 @@ class SpacesService {
     this.cdnEndpoint = process.env.DO_SPACES_ENDPOINT.replace('https://', `https://${this.bucket}.`);
   }
 
-  /**
-   * Generate a pre-signed URL for direct upload from the Flutter app
-   * The app uploads directly to Spaces without credentials ever touching the app
-   * @param {string} fileType - 'image' or 'video'
-   * @param {string} mimeType - The file's mime type (e.g., 'image/jpeg')
-   * @param {string} userId - The authenticated user's ID
-   * @returns {Object} - Contains uploadUrl, fileKey, and publicUrl
-   */
   async generateUploadUrl(fileType, mimeType, userId) {
-    // Validate file type
     const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const allowedVideoTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/webm', 'video/quicktime'];
     
@@ -42,27 +28,23 @@ class SpacesService {
       throw new Error(`Invalid mime type: ${mimeType}. Allowed: ${allowedTypes.join(', ')}`);
     }
 
-    // Generate unique file key with folder structure
     const extension = mimeType.split('/')[1].replace('quicktime', 'mov');
     const timestamp = Date.now();
     const uniqueId = uuidv4();
     const fileKey = `uploads/${userId}/${fileType}s/${timestamp}-${uniqueId}.${extension}`;
 
-    // Create pre-signed URL (valid for 15 minutes)
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: fileKey,
       ContentType: mimeType,
-      ACL: 'public-read', // Make file publicly readable after upload
+      ACL: 'public-read',
       Metadata: {
         'uploaded-by': userId,
         'upload-timestamp': timestamp.toString()
       }
     });
 
-    const uploadUrl = await getSignedUrl(this.client, command, { expiresIn: 900 }); // 15 minutes
-
-    // Generate the public URL for accessing the file after upload
+    const uploadUrl = await getSignedUrl(this.client, command, { expiresIn: 900 });
     const publicUrl = `${this.cdnEndpoint}/${fileKey}`;
 
     return {
@@ -73,10 +55,6 @@ class SpacesService {
     };
   }
 
-  /**
-   * Delete a file from Spaces
-   * @param {string} fileKey - The file's key in the bucket
-   */
   async deleteFile(fileKey) {
     const command = new DeleteObjectCommand({
       Bucket: this.bucket,
@@ -86,14 +64,9 @@ class SpacesService {
     await this.client.send(command);
   }
 
-  /**
-   * Extract file key from public URL
-   * @param {string} publicUrl - The full public URL
-   * @returns {string} - The file key
-   */
   extractFileKey(publicUrl) {
     const url = new URL(publicUrl);
-    return url.pathname.substring(1); // Remove leading slash
+    return url.pathname.substring(1);
   }
 }
 
