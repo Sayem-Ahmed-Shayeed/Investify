@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
 import 'package:investify/features/home/view/navbar/bottom_nav_bar.dart';
+import 'package:investify/features/post_idea/view/post_idea_screen.dart';
 import 'package:investify/features/settings/controller/theme_controller.dart';
-import 'package:investify/utils/theme/app_colors.dart';
 
 import '../controller/nav_bar_controller.dart';
 
@@ -18,15 +18,28 @@ class MainScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Investify', style: theme.textTheme.headlineMedium),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Obx(
-            () => IconButton(
+    return Obx(() {
+      return Scaffold(
+        floatingActionButton: navBarController.currentTabIndex == 0
+            ? OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7,
+                  ),
+                  foregroundColor: theme.colorScheme.surface,
+                  side: BorderSide(color: theme.colorScheme.surface),
+                ),
+                onPressed: () => Get.to(() => const PostIdeaScreen()),
+                child: Text("Add Post"),
+              )
+            : SizedBox(height: 0, width: 0),
+        appBar: AppBar(
+          title: Text('Investify', style: theme.textTheme.headlineMedium),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
               icon: Icon(
                 themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
               ),
@@ -35,34 +48,24 @@ class MainScreen extends StatelessWidget {
                   ? 'Switch to Light Mode'
                   : 'Switch to Dark Mode',
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: authController.logout,
-            tooltip: 'Logout',
-          ),
-        ],
-      ),
-      body: Obx(
-        () => Container(
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: authController.logout,
+              tooltip: 'Logout',
+            ),
+          ],
+        ),
+        body: SizedBox(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isDark
-                  ? [AppColors.gradientTopDark, AppColors.gradientBottomDark]
-                  : [AppColors.gradientTopLight, AppColors.gradientBottomLight],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
           child: IndexedStack(
             index: navBarController.currentTabIndex.value,
+            sizing: StackFit.loose,
             children: navBarController.tabs,
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavBar(),
-    );
+        bottomNavigationBar: BottomNavBar(),
+      );
+    });
   }
 }

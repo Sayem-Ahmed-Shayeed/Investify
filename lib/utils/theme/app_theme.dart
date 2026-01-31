@@ -122,6 +122,10 @@ class AppTheme {
       primary: AppColors.primaryLight,
       secondary: AppColors.primaryLight,
       surface: AppColors.cardLight,
+      background: AppColors.gradientBottomLight,
+      onPrimary: AppColors.buttonTextLight,
+      onSecondary: AppColors.textPrimaryLight,
+      onSurface: AppColors.textPrimaryLight,
     ),
   );
 
@@ -240,6 +244,9 @@ class AppTheme {
       primary: AppColors.primaryDark,
       secondary: AppColors.primaryDark,
       surface: AppColors.cardDark,
+      onPrimary: AppColors.buttonTextDark,
+      onSecondary: AppColors.textPrimaryDark,
+      onSurface: AppColors.textPrimaryDark,
     ),
   );
 }
