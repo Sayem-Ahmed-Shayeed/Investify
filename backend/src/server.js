@@ -7,11 +7,25 @@ const mongoose = require('mongoose');
 
 const uploadRoutes = require('./routes/upload.routes');
 const postRoutes = require('./routes/post.routes');
+const userRoutes = require('./routes/user.routes');
 const { verifyFirebaseToken } = require('./middleware/auth.middleware');
 
 const app = express();
 
-app.use(helmet());
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+};
+app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions));
+
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" }
+}));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -26,14 +40,6 @@ const uploadLimiter = rateLimit({
   message: { error: 'Upload limit reached. Please try again later.' }
 });
 
-const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-app.use(cors(corsOptions));
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -47,6 +53,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/uploads', verifyFirebaseToken, uploadLimiter, uploadRoutes);
 app.use('/api/posts', verifyFirebaseToken, postRoutes);
+app.use('/api/users', verifyFirebaseToken, userRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
