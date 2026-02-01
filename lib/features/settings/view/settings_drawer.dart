@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
+import 'package:investify/features/auth/services/user_service.dart';
 import 'package:investify/features/settings/view/widgets/app_version.dart';
 import 'package:investify/features/settings/view/widgets/build_divider.dart';
 import 'package:investify/features/settings/view/widgets/build_settings_item.dart';
@@ -119,11 +120,21 @@ class SettingsDrawer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'User Name',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                //this code displays the user name
+                FutureBuilder<Map<String, dynamic>?>(
+                  future: UserService().getCurrentUser(),
+                  builder: (context, snapshot) {
+                    String displayName = 'User';
+                    if (snapshot.hasData && snapshot.data != null) {
+                      displayName = snapshot.data!['name'] ?? 'User';
+                    }
+                    return Text(
+                      displayName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: RomRomSizes.spaceBetweenItem),
                 Text(
