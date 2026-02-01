@@ -42,6 +42,8 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
+  String get getCurrentUserEmail => _auth.currentUser?.email ?? '';
+
   /// Show snackbar message
   void _showMessage(String title, String message, {bool isError = false}) {
     Get.snackbar(
@@ -50,7 +52,7 @@ class AuthController extends GetxController {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: isError ? Colors.red.shade100 : Colors.green.shade100,
       colorText: isError ? Colors.red.shade900 : Colors.green.shade900,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 1),
       margin: const EdgeInsets.all(12),
       borderRadius: 8,
     );

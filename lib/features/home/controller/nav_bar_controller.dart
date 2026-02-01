@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/features/profile/view/profile.dart';
 
 import '../view/tabs/calendar_tab.dart';
 import '../view/tabs/home_tab.dart';
@@ -13,6 +14,7 @@ class NavBarController extends GetxController {
     SandboxTab(),
     MessagesTab(),
     CalendarTab(),
+    Profile(),
   ];
 
   onTabChanged(int index) {
