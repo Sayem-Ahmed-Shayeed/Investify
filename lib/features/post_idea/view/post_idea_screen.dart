@@ -77,6 +77,7 @@ class PostIdeaScreen extends StatelessWidget {
                 onPublish: controller.publishPost,
                 isPublishing: controller.isPublishing.value,
                 isSavingDraft: controller.isSavingDraft.value,
+                uploadStatus: controller.uploadStatus.value,
               ),
             ),
           ],
@@ -201,7 +202,7 @@ class PostIdeaScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Obx(() {
-          if (controller.videoPitchPath.value != null) {
+          if (controller.videoPitchBytes.value != null) {
             // Show selected video
             return Container(
               padding: const EdgeInsets.all(16),

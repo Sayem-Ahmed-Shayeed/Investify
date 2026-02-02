@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/view/auth_gate.dart';
 import 'package:investify/features/auth/view/verify_email.dart';
+import 'package:investify/features/post_idea/services/media_upload_service.dart';
 
 import '../model/user_model.dart';
+import '../services/user_service.dart';
 
 /// Controller for handling authentication logic
 class AuthController extends GetxController {
@@ -23,6 +26,7 @@ class AuthController extends GetxController {
   final confirmPassword = ''.obs;
   final nidCardImagePath = Rxn<String>();
   final nidCardFileName = Rxn<String>();
+  Uint8List? nidCardBytes;
 
   // UI state
   final isLoading = false.obs;
@@ -74,11 +78,13 @@ class AuthController extends GetxController {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
         allowMultiple: false,
+        withData: true, // Required to get bytes on mobile
       );
 
       if (result != null && result.files.isNotEmpty) {
         nidCardImagePath.value = result.files.single.path;
         nidCardFileName.value = result.files.single.name;
+        nidCardBytes = result.files.single.bytes;
       }
     } catch (e) {
       _showMessage('Error', 'Error picking image: $e', isError: true);
@@ -89,6 +95,7 @@ class AuthController extends GetxController {
   void clearNidCardImage() {
     nidCardImagePath.value = null;
     nidCardFileName.value = null;
+    nidCardBytes = null;
   }
 
   /// Validate registration form
@@ -214,8 +221,31 @@ class AuthController extends GetxController {
         createdAt: DateTime.now(),
       );
 
-      // TODO: Upload NID card image to Firebase Storage
-      // TODO: Store user data in Firebase Firestore or MongoDB
+      // Upload NID card to Spaces and save user data to MongoDB
+      try {
+        String? nidCardUrl;
+
+        // Upload NID card image if available
+        if (nidCardBytes != null && nidCardFileName.value != null) {
+          debugPrint('📤 Uploading NID card...');
+          final uploadedNid = await MediaUploadService().uploadImage(
+            UploadFile(name: nidCardFileName.value!, bytes: nidCardBytes!),
+          );
+          nidCardUrl = uploadedNid.url;
+          debugPrint('✅ NID card uploaded: $nidCardUrl');
+        }
+
+        await UserService().createUser(
+          name: name.value.trim(),
+          email: email.value.trim(),
+          age: age.value,
+          nidCardUrl: nidCardUrl,
+        );
+        debugPrint('✅ User saved to MongoDB');
+      } catch (e) {
+        debugPrint('⚠️ Failed to save user to MongoDB: $e');
+      }
+
       debugPrint('User registered: ${user.toJson()}');
 
       isLoading.value = false;

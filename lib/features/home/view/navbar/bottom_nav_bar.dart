@@ -16,27 +16,44 @@ class BottomNavBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: RomRomSizes.small),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              NavItem(
-                icon: Icons.home_filled,
-                label: 'Home',
-                clickedTabIndex: 0,
+              Expanded(
+                child: NavItem(
+                  icon: Icons.home_filled,
+                  label: 'Home',
+                  clickedTabIndex: 0,
+                ),
               ),
-              NavItem(icon: Icons.layers, label: 'Sandbox', clickedTabIndex: 1),
-              NavItem(
-                icon: Icons.chat_bubble,
-                label: 'Messages',
-                clickedTabIndex: 2,
-                showBadge: true,
+              Expanded(
+                child: NavItem(
+                  icon: Icons.layers,
+                  label: 'Sandbox',
+                  clickedTabIndex: 1,
+                ),
               ),
-              NavItem(
-                icon: Icons.calendar_month,
-                label: 'Calendar',
-                clickedTabIndex: 3,
+              Expanded(
+                child: NavItem(
+                  icon: Icons.chat_bubble,
+                  label: 'Messages',
+                  clickedTabIndex: 2,
+                  showBadge: true,
+                ),
               ),
-              NavItem(icon: Icons.person, label: 'Profile', clickedTabIndex: 4),
+              Expanded(
+                child: NavItem(
+                  icon: Icons.calendar_month,
+                  label: 'Calendar',
+                  clickedTabIndex: 3,
+                ),
+              ),
+              Expanded(
+                child: NavItem(
+                  icon: Icons.person,
+                  label: 'Profile',
+                  clickedTabIndex: 4,
+                ),
+              ),
             ],
           ),
         ),

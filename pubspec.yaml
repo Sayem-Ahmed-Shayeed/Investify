@@ -22,7 +22,7 @@ dependencies:
   device_preview:
   file_picker:
   intl:
-  http:
+  http: ^1.2.0
   flutter_native_splash:
   get:
   shared_preferences:
@@ -30,6 +30,8 @@ dependencies:
   smooth_page_indicator:
   url_launcher:
   toast:
+  video_player: ^2.8.2
+  cached_network_image: ^3.3.1
 
 
 dev_dependencies:
