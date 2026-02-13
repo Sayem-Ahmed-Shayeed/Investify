@@ -4,6 +4,7 @@ import '../../features/auth/controller/auth_controller.dart';
 import '../../features/chat/controller/chat_controller.dart';
 import '../../features/home/controller/nav_bar_controller.dart';
 import '../../features/post_idea/controller/post_idea_controller.dart';
+import '../../features/profile/controller/profile_controller.dart';
 import '../../features/settings/controller/theme_controller.dart';
 
 class AppBinding extends Bindings {
@@ -19,5 +20,6 @@ class AppBinding extends Bindings {
     Get.put(NavBarController());
     Get.put(PostIdeaController());
     Get.put(ChatController());
+    Get.lazyPut(() => ProfileController());
   }
 }

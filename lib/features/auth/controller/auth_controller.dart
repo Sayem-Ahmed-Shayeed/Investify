@@ -11,6 +11,7 @@ import 'package:investify/features/post_idea/services/media_upload_service.dart'
 
 import '../model/user_model.dart';
 import '../services/user_service.dart';
+import '../../profile/controller/profile_controller.dart';
 
 /// Controller for handling authentication logic
 class AuthController extends GetxController {
@@ -238,6 +239,16 @@ class AuthController extends GetxController {
       _showMessage('Success', 'Login successful!');
       clearFields();
       isLoading.value = false;
+
+      // Fetch new user's profile data
+      cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
+      fetchUserProfile();
+
+      // Refresh profile posts for the new user
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().fetchMyPosts();
+      }
+
       // AuthGate will handle navigation
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
@@ -448,6 +459,16 @@ class AuthController extends GetxController {
     try {
       await _auth.signOut();
       clearFields();
+
+      // Clear cached profile data
+      cachedUserName.value = '';
+      cachedProfileImageUrl.value = null;
+
+      // Clear profile posts
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().posts.clear();
+      }
+
       _showMessage('Success', 'Logged out successfully');
       // Navigate back to auth gate
       Get.offAll(() => const AuthGate());
