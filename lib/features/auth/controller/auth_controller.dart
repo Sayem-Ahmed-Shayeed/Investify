@@ -41,7 +41,7 @@ class AuthController extends GetxController {
   final resetEmailSent = false.obs;
 
   // Cached user profile data
-  final cachedUserName = 'User'.obs;
+  final cachedUserName = ''.obs;
   final cachedProfileImageUrl = Rxn<String>();
   final isUploadingProfileImage = false.obs;
 
@@ -56,6 +56,9 @@ class AuthController extends GetxController {
     super.onInit();
     // Fetch user profile when controller initializes (if logged in)
     if (_auth.currentUser != null) {
+      // Set Firebase displayName instantly (cached locally, no network call)
+      cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
+      // Then fetch the full profile from MongoDB (may override with updated name)
       fetchUserProfile();
     }
   }
