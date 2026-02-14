@@ -9,9 +9,9 @@ import 'package:investify/features/auth/view/auth_gate.dart';
 import 'package:investify/features/auth/view/verify_email.dart';
 import 'package:investify/features/post_idea/services/media_upload_service.dart';
 
+import '../../profile/controller/profile_controller.dart';
 import '../model/user_model.dart';
 import '../services/user_service.dart';
-import '../../profile/controller/profile_controller.dart';
 
 /// Controller for handling authentication logic
 class AuthController extends GetxController {
@@ -317,9 +317,6 @@ class AuthController extends GetxController {
 
       debugPrint('User created: ${userCredential.user?.uid}');
 
-      // Send email verification
-      await sendEmailVerification();
-
       // Create user model
       final user = UserModel(
         uid: userCredential.user?.uid,
@@ -350,6 +347,8 @@ class AuthController extends GetxController {
           age: age.value,
           nidCardUrl: nidCardUrl,
         );
+        // Send email verification
+        await sendEmailVerification();
         debugPrint('✅ User saved to MongoDB');
       } catch (e) {
         debugPrint('⚠️ Failed to save user to MongoDB: $e');
@@ -360,6 +359,7 @@ class AuthController extends GetxController {
       isLoading.value = false;
 
       debugPrint('Navigating to verify email screen...');
+
       // Navigate to verify email screen and clear stack
       Get.offAll(() => const VerifyEmailScreen());
     } on FirebaseAuthException catch (e) {

@@ -13,6 +13,7 @@ class Profile extends StatelessWidget {
     final authController = Get.find<AuthController>();
     final profileController = Get.put(ProfileController());
     final theme = Theme.of(context);
+    authController.fetchUserProfile();
 
     return Scaffold(
       body: RefreshIndicator(
