@@ -11,6 +11,7 @@ import 'package:investify/features/post_idea/services/media_upload_service.dart'
 
 import '../model/user_model.dart';
 import '../services/user_service.dart';
+import '../../profile/controller/profile_controller.dart';
 
 /// Controller for handling authentication logic
 class AuthController extends GetxController {
@@ -40,10 +41,108 @@ class AuthController extends GetxController {
   // Password reset
   final resetEmailSent = false.obs;
 
+  // Cached user profile data
+  final cachedUserName = ''.obs;
+  final cachedProfileImageUrl = Rxn<String>();
+  final isUploadingProfileImage = false.obs;
+
   @override
   void onClose() {
     _verificationTimer?.cancel();
     super.onClose();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Fetch user profile when controller initializes (if logged in)
+    if (_auth.currentUser != null) {
+      // Set Firebase displayName instantly (cached locally, no network call)
+      cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
+      // Then fetch the full profile from MongoDB (may override with updated name)
+      fetchUserProfile();
+    }
+  }
+
+  /// Fetch user profile from MongoDB and cache it
+  Future<void> fetchUserProfile() async {
+    try {
+      final userData = await UserService().getCurrentUser();
+      if (userData != null) {
+        if (userData['name'] != null) {
+          cachedUserName.value = userData['name'];
+        }
+        if (userData['profileImageUrl'] != null) {
+          cachedProfileImageUrl.value = userData['profileImageUrl'];
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch user profile: $e');
+    }
+  }
+
+  /// Pick and upload profile image
+  Future<void> pickAndUploadProfileImage() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+        withData: true,
+      );
+
+      if (result == null ||
+          result.files.isEmpty ||
+          result.files.single.bytes == null) {
+        return;
+      }
+
+      isUploadingProfileImage.value = true;
+
+      final file = result.files.single;
+      debugPrint('📤 Uploading profile image...');
+
+      // Upload to DigitalOcean Spaces
+      final uploadedImage = await MediaUploadService().uploadImage(
+        UploadFile(name: file.name, bytes: file.bytes!),
+      );
+
+      debugPrint('✅ Profile image uploaded: ${uploadedImage.url}');
+
+      // Update user profile in MongoDB
+      await UserService().updateUser(profileImageUrl: uploadedImage.url);
+
+      // Update cached value
+      cachedProfileImageUrl.value = uploadedImage.url;
+
+      debugPrint('✅ Profile image URL saved to MongoDB');
+      _showMessage('Success', 'Profile photo updated!');
+    } catch (e) {
+      debugPrint('❌ Failed to upload profile image: $e');
+      _showMessage('Error', 'Failed to upload profile photo', isError: true);
+    } finally {
+      isUploadingProfileImage.value = false;
+    }
+  }
+
+  /// Remove profile image
+  Future<void> removeProfileImage() async {
+    try {
+      isUploadingProfileImage.value = true;
+
+      // Update user profile in MongoDB with empty string
+      await UserService().updateUser(profileImageUrl: '');
+
+      // Clear cached value
+      cachedProfileImageUrl.value = null;
+
+      debugPrint('✅ Profile image removed');
+      _showMessage('Success', 'Profile photo removed!');
+    } catch (e) {
+      debugPrint('❌ Failed to remove profile image: $e');
+      _showMessage('Error', 'Failed to remove profile photo', isError: true);
+    } finally {
+      isUploadingProfileImage.value = false;
+    }
   }
 
   String get getCurrentUserEmail => _auth.currentUser?.email ?? '';
@@ -140,6 +239,16 @@ class AuthController extends GetxController {
       _showMessage('Success', 'Login successful!');
       clearFields();
       isLoading.value = false;
+
+      // Fetch new user's profile data
+      cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
+      fetchUserProfile();
+
+      // Refresh profile posts for the new user
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().fetchMyPosts();
+      }
+
       // AuthGate will handle navigation
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
@@ -350,6 +459,16 @@ class AuthController extends GetxController {
     try {
       await _auth.signOut();
       clearFields();
+
+      // Clear cached profile data
+      cachedUserName.value = '';
+      cachedProfileImageUrl.value = null;
+
+      // Clear profile posts
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().posts.clear();
+      }
+
       _showMessage('Success', 'Logged out successfully');
       // Navigate back to auth gate
       Get.offAll(() => const AuthGate());

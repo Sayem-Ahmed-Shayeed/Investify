@@ -181,19 +181,24 @@ class PostCard extends StatelessWidget {
 
           // Image gallery
           if (hasImages && imageMedia.isNotEmpty)
-            SizedBox(
-              height: 200,
-              child: imageMedia.length == 1
-                  ? Image.network(
-                      imageMedia.first.url,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Center(child: Icon(Icons.broken_image)),
+            imageMedia.length == 1
+                ? AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: ClipRect(
+                      child: Image.network(
+                        imageMedia.first.url,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          child: const Center(child: Icon(Icons.broken_image)),
+                        ),
                       ),
-                    )
-                  : ListView.builder(
+                    ),
+                  )
+                : SizedBox(
+                    height: 220,
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: imageMedia.length,
                       itemBuilder: (context, index) {
@@ -204,16 +209,17 @@ class PostCard extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              imageMedia[index].url,
-                              width: 200,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                width: 200,
-                                color:
-                                    theme.colorScheme.surfaceContainerHighest,
-                                child: const Center(
-                                  child: Icon(Icons.broken_image),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Image.network(
+                                imageMedia[index].url,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: const Center(
+                                    child: Icon(Icons.broken_image),
+                                  ),
                                 ),
                               ),
                             ),
@@ -221,7 +227,7 @@ class PostCard extends StatelessWidget {
                         );
                       },
                     ),
-            ),
+                  ),
 
           // Action buttons
           Padding(
@@ -333,27 +339,31 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     final theme = Theme.of(context);
 
     if (_hasError) {
-      return Container(
-        height: 200,
-        color: theme.colorScheme.surfaceContainerHighest,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, color: theme.colorScheme.error),
-              const SizedBox(height: 8),
-              Text('Failed to load video', style: theme.textTheme.bodySmall),
-            ],
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, color: theme.colorScheme.error),
+                const SizedBox(height: 8),
+                Text('Failed to load video', style: theme.textTheme.bodySmall),
+              ],
+            ),
           ),
         ),
       );
     }
 
     if (!_isInitialized) {
-      return Container(
-        height: 200,
-        color: theme.colorScheme.surfaceContainerHighest,
-        child: const Center(child: CircularProgressIndicator()),
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
@@ -371,8 +381,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         alignment: Alignment.center,
         children: [
           AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
+            aspectRatio: 16 / 9,
+            child: ClipRect(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _controller.value.size.width,
+                  height: _controller.value.size.height,
+                  child: VideoPlayer(_controller),
+                ),
+              ),
+            ),
           ),
           // Play/pause overlay
           AnimatedOpacity(
