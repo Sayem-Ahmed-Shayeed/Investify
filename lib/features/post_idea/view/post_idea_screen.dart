@@ -35,7 +35,7 @@ class PostIdeaScreen extends StatelessWidget {
         ),
         leadingWidth: 80,
         title: Text(
-          'New Update',
+          'New Pitch',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -50,7 +50,7 @@ class PostIdeaScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(RomRomSizes.large),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

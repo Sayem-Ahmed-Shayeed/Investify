@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,6 @@ class PostIdeaController extends GetxController {
   final videoPitchBytes = Rxn<Uint8List>();
   final videoPitchFileName = Rxn<String>();
 
-  // Gallery images - store bytes and names for web support
   final galleryImageBytes = <Uint8List>[].obs;
   final galleryImageNames = <String>[].obs;
 
@@ -40,7 +37,8 @@ class PostIdeaController extends GetxController {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.video,
         allowMultiple: false,
-        withData: true, // Important for web - loads bytes
+        withData: true,
+        withReadStream: true,
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -169,6 +167,7 @@ class PostIdeaController extends GetxController {
       uploadStatus.value = '';
       _showMessage('Success', 'Post published successfully!');
       _clearForm();
+      Get.back();
       Get.back();
     } catch (e) {
       isPublishing.value = false;
