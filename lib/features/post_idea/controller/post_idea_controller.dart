@@ -6,13 +6,15 @@ import 'package:investify/utils/sizes/size.dart';
 
 import '../services/media_upload_service.dart';
 import '../services/post_service.dart';
+import '../services/video_thumbnail_service.dart';
 
 class PostIdeaController extends GetxController {
   final content = ''.obs;
 
-  // Video pitch - store both bytes and name for web support
+  // Video pitch - store both bytes, name, and path for web support
   final videoPitchBytes = Rxn<Uint8List>();
   final videoPitchFileName = Rxn<String>();
+  final videoPitchPath = Rxn<String>(); // Store path for thumbnail generation
 
   final galleryImageBytes = <Uint8List>[].obs;
   final galleryImageNames = <String>[].obs;
@@ -26,6 +28,7 @@ class PostIdeaController extends GetxController {
   // Services
   final _mediaUploadService = MediaUploadService();
   final _postService = PostService();
+  final _thumbnailService = VideoThumbnailService();
 
   /// Update content text
   void updateContent(String value) {
@@ -47,6 +50,8 @@ class PostIdeaController extends GetxController {
         if (file.bytes != null) {
           videoPitchBytes.value = file.bytes;
           videoPitchFileName.value = file.name;
+          videoPitchPath.value =
+              file.path; // Store path for thumbnail generation
           _showMessage('Success', 'Video selected: ${file.name}');
         } else {
           _showMessage('Error', 'Could not load video data', isError: true);
@@ -61,6 +66,7 @@ class PostIdeaController extends GetxController {
   void removeVideo() {
     videoPitchBytes.value = null;
     videoPitchFileName.value = null;
+    videoPitchPath.value = null;
   }
 
   /// Pick images for gallery
@@ -182,15 +188,39 @@ class PostIdeaController extends GetxController {
 
     // Upload video if exists
     if (videoPitchBytes.value != null && videoPitchFileName.value != null) {
+      uploadStatus.value = 'Generating thumbnail...';
+
+      // Generate thumbnail from video (mobile only, not web)
+      Uint8List? thumbnailBytes;
+      if (videoPitchPath.value != null && !kIsWeb) {
+        try {
+          thumbnailBytes = await _thumbnailService.generateThumbnailFromFile(
+            videoPitchPath.value!,
+          );
+          if (thumbnailBytes != null) {
+            debugPrint('✅ Thumbnail generated: ${thumbnailBytes.length} bytes');
+          }
+        } catch (e) {
+          debugPrint('⚠️ Thumbnail generation failed: $e');
+          // Continue without thumbnail
+        }
+      }
+
       uploadStatus.value = 'Uploading video...';
       try {
         final uploadFile = UploadFile(
           name: videoPitchFileName.value!,
           bytes: videoPitchBytes.value!,
         );
-        final uploadedVideo = await _mediaUploadService.uploadVideo(uploadFile);
+        final uploadedVideo = await _mediaUploadService.uploadVideo(
+          uploadFile,
+          thumbnailBytes: thumbnailBytes,
+        );
         uploadedMedia.add(uploadedVideo);
         debugPrint('✅ Video uploaded: ${uploadedVideo.url}');
+        if (uploadedVideo.thumbnailUrl != null) {
+          debugPrint('✅ Thumbnail URL: ${uploadedVideo.thumbnailUrl}');
+        }
       } catch (e) {
         debugPrint('❌ Video upload failed: $e');
         rethrow;
@@ -226,6 +256,7 @@ class PostIdeaController extends GetxController {
     content.value = '';
     videoPitchBytes.value = null;
     videoPitchFileName.value = null;
+    videoPitchPath.value = null;
     galleryImageBytes.clear();
     galleryImageNames.clear();
   }

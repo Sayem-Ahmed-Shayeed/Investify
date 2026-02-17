@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../auth/services/user_service.dart';
-import '../../post_idea/model/media_model.dart';
 import '../../post_idea/model/post_idea_model.dart';
 import '../view/post_detail_page.dart';
 
@@ -11,10 +9,6 @@ class PostCardController extends GetxController {
   // Page index for media carousel
   final currentMediaIndex = 0.obs;
   final PageController pageController = PageController();
-
-  // Video controllers map: url -> controller
-  final videoControllers = <String, VideoPlayerController>{}.obs;
-  final initializedVideos = <String, bool>{}.obs;
 
   // UI state
   final isSaved = false.obs;
@@ -27,35 +21,7 @@ class PostCardController extends GetxController {
   @override
   void onClose() {
     pageController.dispose();
-    for (final controller in videoControllers.values) {
-      controller.dispose();
-    }
     super.onClose();
-  }
-
-  /// Initialize video controllers for media items
-  void initMedia(List<MediaItem> media) {
-    for (final item in media) {
-      if (item.type == 'video') {
-        _initVideo(item.url);
-      }
-    }
-  }
-
-  Future<void> _initVideo(String url) async {
-    if (videoControllers.containsKey(url)) return;
-
-    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
-    videoControllers[url] = controller;
-
-    try {
-      await controller.initialize();
-      controller.setLooping(true);
-      initializedVideos[url] = true;
-    } catch (e) {
-      debugPrint('Error initializing video: $e');
-      initializedVideos[url] = false;
-    }
   }
 
   void onPageChanged(int index) {
@@ -131,15 +97,5 @@ class PostCardController extends GetxController {
       transition: Transition.rightToLeft,
       duration: const Duration(milliseconds: 300),
     );
-  }
-
-  /// Get video controller for a url
-  VideoPlayerController? getVideoController(String url) {
-    return videoControllers[url];
-  }
-
-  /// Check if video is initialized
-  bool isVideoInitialized(String url) {
-    return initializedVideos[url] ?? false;
   }
 }

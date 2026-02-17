@@ -1,11 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:video_player/video_player.dart';
 
 import '../../../utils/theme/app_colors.dart';
 import '../../post_idea/model/post_idea_model.dart';
 import '../controller/post_detail_controller.dart';
+import 'widgets/thumbnail_video_player.dart';
 
 class PostDetailPage extends StatelessWidget {
   const PostDetailPage({super.key});
@@ -114,63 +115,15 @@ class PostDetailAppBar extends StatelessWidget {
   }
 }
 
-/// Media Gallery Widget with auto-playing video
-class PostDetailMediaGallery extends StatefulWidget {
+/// Media Gallery Widget with click-to-play video
+class PostDetailMediaGallery extends StatelessWidget {
   final PostDetailController controller;
 
   const PostDetailMediaGallery({super.key, required this.controller});
 
   @override
-  State<PostDetailMediaGallery> createState() => _PostDetailMediaGalleryState();
-}
-
-class _PostDetailMediaGalleryState extends State<PostDetailMediaGallery> {
-  final Map<String, VideoPlayerController> _videoControllers = {};
-  final Map<String, bool> _initializedVideos = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeVideos();
-  }
-
-  Future<void> _initializeVideos() async {
-    for (final media in widget.controller.post.media) {
-      if (media.type == 'video') {
-        final controller = VideoPlayerController.networkUrl(
-          Uri.parse(media.url),
-        );
-        _videoControllers[media.url] = controller;
-
-        try {
-          await controller.initialize();
-          controller.setLooping(true);
-          controller.setVolume(0);
-          controller.play();
-          if (mounted) {
-            setState(() {
-              _initializedVideos[media.url] = true;
-            });
-          }
-        } catch (e) {
-          debugPrint('Error initializing video: $e');
-          _initializedVideos[media.url] = false;
-        }
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final controller in _videoControllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final post = widget.controller.post;
+    final post = controller.post;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SizedBox(
@@ -178,20 +131,26 @@ class _PostDetailMediaGalleryState extends State<PostDetailMediaGallery> {
       child: Stack(
         children: [
           PageView.builder(
-            controller: widget.controller.pageController,
-            onPageChanged: widget.controller.onPageChanged,
+            controller: controller.pageController,
+            onPageChanged: controller.onPageChanged,
             itemCount: post.media.length,
             itemBuilder: (context, index) {
               final media = post.media[index];
 
               if (media.type == 'video') {
-                return _buildVideoPlayer(media.url, isDark);
+                return ThumbnailVideoPlayer(
+                  videoUrl: media.url,
+                  thumbnailUrl: media.thumbnailUrl,
+                  looping: true,
+                  showControls: true,
+                );
               } else {
-                return Image.network(
-                  media.url,
+                return CachedNetworkImage(
+                  imageUrl: media.url,
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  errorBuilder: (_, __, ___) => _buildPlaceholder(isDark),
+                  placeholder: (_, __) => _buildPlaceholder(isDark),
+                  errorWidget: (_, __, ___) => _buildPlaceholder(isDark),
                 );
               }
             },
@@ -204,7 +163,7 @@ class _PostDetailMediaGalleryState extends State<PostDetailMediaGallery> {
               right: 0,
               child: Center(
                 child: SmoothPageIndicator(
-                  controller: widget.controller.pageController,
+                  controller: controller.pageController,
                   count: post.media.length,
                   effect: WormEffect(
                     dotColor: isDark
@@ -224,121 +183,6 @@ class _PostDetailMediaGalleryState extends State<PostDetailMediaGallery> {
     );
   }
 
-  Widget _buildVideoPlayer(String url, bool isDark) {
-    final controller = _videoControllers[url];
-    final isInitialized = _initializedVideos[url] ?? false;
-
-    if (!isInitialized || controller == null) {
-      return _buildLoadingWidget(isDark);
-    }
-
-    return GestureDetector(
-      onTap: () {
-        if (controller.value.isPlaying) {
-          controller.pause();
-        } else {
-          controller.play();
-        }
-        setState(() {});
-      },
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox.expand(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: controller.value.size.width,
-                height: controller.value.size.height,
-                child: VideoPlayer(controller),
-              ),
-            ),
-          ),
-          if (!controller.value.isPlaying)
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.play_arrow,
-                color: Colors.white,
-                size: 40,
-              ),
-            ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: VideoProgressIndicator(
-              controller,
-              allowScrubbing: true,
-              colors: VideoProgressColors(
-                playedColor: isDark
-                    ? AppColors.primaryDark
-                    : AppColors.primaryLight,
-                bufferedColor: Colors.white.withValues(alpha: 0.3),
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: GestureDetector(
-              onTap: () {
-                final volume = controller.value.volume;
-                controller.setVolume(volume > 0 ? 0 : 1);
-                setState(() {});
-              },
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  controller.value.volume > 0
-                      ? Icons.volume_up
-                      : Icons.volume_off,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoadingWidget(bool isDark) {
-    return Container(
-      color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              color: isDark ? AppColors.primaryDark : AppColors.primaryLight,
-              strokeWidth: 2,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Loading video...',
-              style: TextStyle(
-                color: isDark ? AppColors.mutedDark : AppColors.mutedLight,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildPlaceholder(bool isDark) {
     return Container(
       color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
@@ -346,7 +190,7 @@ class _PostDetailMediaGalleryState extends State<PostDetailMediaGallery> {
         child: Icon(
           Icons.image_outlined,
           color: isDark ? AppColors.mutedDark : AppColors.mutedLight,
-          size: 64,
+          size: 48,
         ),
       ),
     );

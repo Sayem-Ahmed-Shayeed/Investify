@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +48,9 @@ class UploadFile {
 /// This ensures Spaces credentials NEVER touch the mobile app
 class MediaUploadService {
   static final MediaUploadService _instance = MediaUploadService._internal();
+
   factory MediaUploadService() => _instance;
+
   MediaUploadService._internal();
 
   /// Get the current user's Firebase ID token for authentication
@@ -177,8 +179,11 @@ class MediaUploadService {
     );
   }
 
-  /// Upload a single video and return its public URL
-  Future<UploadedMedia> uploadVideo(UploadFile file) async {
+  /// Upload a single video and return its public URL with optional thumbnail
+  Future<UploadedMedia> uploadVideo(
+    UploadFile file, {
+    Uint8List? thumbnailBytes,
+  }) async {
     final mimeType = _getMimeType(file.name, 'video');
 
     debugPrint('📤 Requesting pre-signed URL for video...');
@@ -194,11 +199,34 @@ class MediaUploadService {
       mimeType: mimeType,
     );
 
+    // Upload thumbnail if provided
+    String? thumbnailUrl;
+    if (thumbnailBytes != null) {
+      try {
+        debugPrint('📤 Uploading video thumbnail...');
+        final thumbPresigned = await _getPresignedUrl(
+          fileType: 'image',
+          mimeType: 'image/jpeg',
+        );
+        await _uploadToSpaces(
+          uploadUrl: thumbPresigned.uploadUrl,
+          bytes: thumbnailBytes,
+          mimeType: 'image/jpeg',
+        );
+        thumbnailUrl = thumbPresigned.publicUrl;
+        debugPrint('✅ Thumbnail uploaded: $thumbnailUrl');
+      } catch (e) {
+        debugPrint('⚠️ Failed to upload thumbnail: $e');
+        // Continue without thumbnail - video still uploads successfully
+      }
+    }
+
     return UploadedMedia(
       url: presigned.publicUrl,
       fileKey: presigned.fileKey,
       type: 'video',
       mimeType: mimeType,
+      thumbnailUrl: thumbnailUrl,
     );
   }
 
@@ -290,6 +318,7 @@ class UploadedMedia {
   final String fileKey;
   final String type; // 'image' or 'video'
   final String mimeType;
+  final String? thumbnailUrl;
   final int order;
 
   UploadedMedia({
@@ -297,6 +326,7 @@ class UploadedMedia {
     required this.fileKey,
     required this.type,
     required this.mimeType,
+    this.thumbnailUrl,
     this.order = 0,
   });
 
@@ -305,6 +335,7 @@ class UploadedMedia {
     'fileKey': fileKey,
     'type': type,
     'mimeType': mimeType,
+    if (thumbnailUrl != null) 'thumbnailUrl': thumbnailUrl,
     'order': order,
   };
 }
