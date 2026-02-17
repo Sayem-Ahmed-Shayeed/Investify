@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../utils/theme/app_colors.dart';
 import '../../auth/controller/auth_controller.dart';
-import '../../home/view/tabs/home_tab.dart';
+import '../../home/view/widgets/post_card.dart';
 import '../controller/profile_controller.dart';
 
 class Profile extends StatelessWidget {
@@ -13,16 +14,23 @@ class Profile extends StatelessWidget {
     final authController = Get.find<AuthController>();
     final profileController = Get.put(ProfileController());
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     authController.fetchUserProfile();
 
     return Scaffold(
+      backgroundColor: isDark
+          ? AppColors.scaffoldBackgroundDark
+          : AppColors.scaffoldBackgroundLight,
       body: RefreshIndicator(
         onRefresh: () => profileController.refreshMyPosts(),
         child: CustomScrollView(
           slivers: [
             // Profile header
             SliverToBoxAdapter(
-              child: _buildProfileHeader(theme, authController),
+              child: ProfileHeader(
+                authController: authController,
+                profileController: profileController,
+              ),
             ),
 
             // Posts section title
@@ -40,7 +48,6 @@ class Profile extends StatelessWidget {
 
             // Posts list
             Obx(() {
-              // Loading state
               if (profileController.isLoading.value &&
                   profileController.posts.isEmpty) {
                 return const SliverFillRemaining(
@@ -48,7 +55,6 @@ class Profile extends StatelessWidget {
                 );
               }
 
-              // Error state
               if (profileController.hasError.value &&
                   profileController.posts.isEmpty) {
                 return SliverFillRemaining(
@@ -77,7 +83,6 @@ class Profile extends StatelessWidget {
                 );
               }
 
-              // Empty state
               if (profileController.posts.isEmpty) {
                 return SliverFillRemaining(
                   child: Center(
@@ -102,47 +107,57 @@ class Profile extends StatelessWidget {
                 );
               }
 
-              // Posts list
               return SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final post = profileController.posts[index];
                   return PostCard(
                     post: post,
-                    onLike: () {}, // Display only — no actions
+                    onLike: () {},
+                    isOwnPost: true, // Hide Connect/Save buttons for own posts
                   );
                 }, childCount: profileController.posts.length),
               );
             }),
 
-            // Bottom padding
             const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildProfileHeader(ThemeData theme, AuthController authController) {
+/// Profile Header Widget
+class ProfileHeader extends StatelessWidget {
+  final AuthController authController;
+  final ProfileController profileController;
+
+  const ProfileHeader({
+    super.key,
+    required this.authController,
+    required this.profileController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
+          width: 0.5,
+        ),
+      ),
       child: Row(
         children: [
           // Avatar
-          Obx(() {
-            final imageUrl = authController.cachedProfileImageUrl.value;
-            return CircleAvatar(
-              radius: 36,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
-              child: imageUrl == null
-                  ? Icon(
-                      Icons.person,
-                      size: 36,
-                      color: theme.colorScheme.onPrimaryContainer,
-                    )
-                  : null,
-            );
-          }),
+          ProfileAvatar(authController: authController),
           const SizedBox(width: 16),
 
           // Name + email
@@ -163,32 +178,103 @@ class Profile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   authController.getCurrentUserEmail,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
             ),
           ),
 
           // Post count
-          Obx(
-            () => Column(
-              children: [
-                Text(
-                  '${profileController.posts.length}',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text('Posts', style: theme.textTheme.bodySmall),
-              ],
-            ),
-          ),
+          Obx(() => ProfilePostCount(count: profileController.posts.length)),
         ],
       ),
     );
   }
+}
 
-  ProfileController get profileController => Get.find<ProfileController>();
+/// Profile Avatar Widget
+class ProfileAvatar extends StatelessWidget {
+  final AuthController authController;
+
+  const ProfileAvatar({super.key, required this.authController});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Obx(() {
+      final imageUrl = authController.cachedProfileImageUrl.value;
+      final name = authController.cachedUserName.value;
+
+      return Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isDark ? AppColors.primaryDark : AppColors.primaryLight,
+            width: 2,
+          ),
+        ),
+        child: ClipOval(
+          child: imageUrl != null && imageUrl.isNotEmpty
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: 72,
+                  height: 72,
+                  errorBuilder: (_, __, ___) => _buildPlaceholder(name, isDark),
+                )
+              : _buildPlaceholder(name, isDark),
+        ),
+      );
+    });
+  }
+
+  Widget _buildPlaceholder(String name, bool isDark) {
+    return Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : 'U',
+        style: TextStyle(
+          color: isDark ? AppColors.primaryDark : AppColors.primaryLight,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+/// Profile Post Count Widget
+class ProfilePostCount extends StatelessWidget {
+  final int count;
+
+  const ProfilePostCount({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$count',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isDark ? AppColors.primaryDark : AppColors.primaryLight,
+            ),
+          ),
+          Text('Posts', style: theme.textTheme.bodySmall),
+        ],
+      ),
+    );
+  }
 }

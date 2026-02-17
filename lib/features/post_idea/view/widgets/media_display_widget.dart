@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
+import '../../../home/view/widgets/thumbnail_video_player.dart';
 import '../../model/media_model.dart';
 
 /// Widget to display a single media item (image or video)
-class MediaItemWidget extends StatefulWidget {
+class MediaItemWidget extends StatelessWidget {
   final MediaItem media;
   final double? height;
   final double? width;
@@ -22,54 +22,20 @@ class MediaItemWidget extends StatefulWidget {
   });
 
   @override
-  State<MediaItemWidget> createState() => _MediaItemWidgetState();
-}
-
-class _MediaItemWidgetState extends State<MediaItemWidget> {
-  VideoPlayerController? _videoController;
-  bool _isVideoInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.media.type == 'video') {
-      _initializeVideo();
-    }
-  }
-
-  Future<void> _initializeVideo() async {
-    _videoController = VideoPlayerController.networkUrl(
-      Uri.parse(widget.media.url),
-    );
-    await _videoController!.initialize();
-    if (mounted) {
-      setState(() {
-        _isVideoInitialized = true;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     Widget content;
 
-    if (widget.media.type == 'video') {
-      content = _buildVideoWidget(isDark);
+    if (media.type == 'video') {
+      content = _buildVideoWidget();
     } else {
       content = _buildImageWidget(isDark);
     }
 
-    if (widget.borderRadius != null) {
-      return ClipRRect(borderRadius: widget.borderRadius!, child: content);
+    if (borderRadius != null) {
+      return ClipRRect(borderRadius: borderRadius!, child: content);
     }
 
     return content;
@@ -77,19 +43,19 @@ class _MediaItemWidgetState extends State<MediaItemWidget> {
 
   Widget _buildImageWidget(bool isDark) {
     return CachedNetworkImage(
-      imageUrl: widget.media.url,
-      height: widget.height,
-      width: widget.width,
-      fit: widget.fit,
+      imageUrl: media.url,
+      height: height,
+      width: width,
+      fit: fit,
       placeholder: (context, url) => Container(
-        height: widget.height,
-        width: widget.width,
+        height: height,
+        width: width,
         color: isDark ? Colors.grey[800] : Colors.grey[200],
         child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       errorWidget: (context, url, error) => Container(
-        height: widget.height,
-        width: widget.width,
+        height: height,
+        width: width,
         color: isDark ? Colors.grey[800] : Colors.grey[200],
         child: Icon(
           Icons.broken_image,
@@ -99,58 +65,16 @@ class _MediaItemWidgetState extends State<MediaItemWidget> {
     );
   }
 
-  Widget _buildVideoWidget(bool isDark) {
-    if (!_isVideoInitialized) {
-      return Container(
-        height: widget.height,
-        width: widget.width,
-        color: isDark ? Colors.grey[800] : Colors.grey[200],
-        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      );
-    }
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          height: widget.height,
-          width: widget.width,
-          child: FittedBox(
-            fit: widget.fit,
-            child: SizedBox(
-              width: _videoController!.value.size.width,
-              height: _videoController!.value.size.height,
-              child: VideoPlayer(_videoController!),
-            ),
-          ),
-        ),
-        // Play/Pause button overlay
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              if (_videoController!.value.isPlaying) {
-                _videoController!.pause();
-              } else {
-                _videoController!.play();
-              }
-            });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Icon(
-              _videoController!.value.isPlaying
-                  ? Icons.pause
-                  : Icons.play_arrow,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-        ),
-      ],
+  Widget _buildVideoWidget() {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: ThumbnailVideoPlayer(
+        videoUrl: media.url,
+        thumbnailUrl: media.thumbnailUrl,
+        looping: true,
+        showControls: true,
+      ),
     );
   }
 }
