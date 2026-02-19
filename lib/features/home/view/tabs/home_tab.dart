@@ -23,7 +23,7 @@ class HomeTab extends StatelessWidget {
       body: Obx(() {
         // Loading state
         if (controller.isLoading.value && controller.posts.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator());
         }
 
         // Error state

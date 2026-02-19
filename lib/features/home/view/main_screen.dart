@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
 import 'package:investify/features/home/view/navbar/bottom_nav_bar.dart';
-import 'package:investify/features/post_idea/view/post_idea_screen.dart';
 import 'package:investify/features/settings/controller/theme_controller.dart';
 import 'package:investify/features/settings/view/settings_drawer.dart';
 
@@ -31,17 +30,6 @@ class _MainScreenState extends State<MainScreen> {
       return Scaffold(
         key: _scaffoldKey,
         drawer: isProfileTab ? const SettingsDrawer() : null,
-        floatingActionButton: (navBarController.currentTabIndex.value == 0)
-            ? OutlinedButton(
-                onPressed: () => Get.to(() => const PostIdeaScreen()),
-                child: Text(
-                  "Add Post",
-                  style: TextStyle(
-                    color: Get.isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-              )
-            : const SizedBox.shrink(),
         appBar: AppBar(
           leading: isProfileTab
               ? IconButton(
