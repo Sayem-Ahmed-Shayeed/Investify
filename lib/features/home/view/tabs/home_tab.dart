@@ -20,55 +20,6 @@ class HomeTab extends StatelessWidget {
       backgroundColor: isDark
           ? AppColors.scaffoldBackgroundDark
           : AppColors.scaffoldBackgroundLight,
-      appBar: AppBar(
-        title: Text(
-          'Smart Feed',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          // Filter button matching the screenshot
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: OutlinedButton.icon(
-              onPressed: () {
-                // TODO: Show filters
-              },
-              icon: Icon(
-                Icons.tune,
-                size: 18,
-                color: isDark ? AppColors.primaryDark : AppColors.primaryLight,
-              ),
-              label: Text(
-                'Filters',
-                style: TextStyle(
-                  color: isDark
-                      ? AppColors.primaryDark
-                      : AppColors.primaryLight,
-                ),
-              ),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                  color: isDark
-                      ? AppColors.primaryDark
-                      : AppColors.primaryLight,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: Obx(() {
         // Loading state
         if (controller.isLoading.value && controller.posts.isEmpty) {
