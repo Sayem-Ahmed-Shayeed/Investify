@@ -37,21 +37,27 @@ class BottomNavBar extends StatelessWidget {
                   icon: Icons.chat_bubble,
                   label: 'Messages',
                   clickedTabIndex: 2,
-                  showBadge: true,
+                ),
+              ),
+              Expanded(
+                child: NavItem(
+                  icon: Icons.post_add,
+                  label: 'Add Pitch',
+                  clickedTabIndex: 3,
                 ),
               ),
               Expanded(
                 child: NavItem(
                   icon: Icons.calendar_month,
                   label: 'Calendar',
-                  clickedTabIndex: 3,
+                  clickedTabIndex: 4,
                 ),
               ),
               Expanded(
                 child: NavItem(
                   icon: Icons.person,
                   label: 'Profile',
-                  clickedTabIndex: 4,
+                  clickedTabIndex: 5,
                 ),
               ),
             ],
