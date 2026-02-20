@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:investify/features/auth/services/user_service.dart';
 import 'package:investify/features/chat/view/widgets/chatInput.dart';
 import 'package:investify/features/chat/view/widgets/chat_bubble.dart';
@@ -33,8 +32,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void initState() {
     super.initState();
     _chatController = Get.find<ChatController>();
+    _chatController.setCurrentRoom(receiverUid: widget.receiverUid);
     _chatController.listenToMessages(widget.roomID);
     _loadReceiver();
+
+    // Auto-scroll to bottom when screen is first opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _chatController.scrollToBottom();
+    });
   }
 
   Future<void> _loadReceiver() async {
@@ -162,6 +167,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
 
     return ListView.builder(
+      controller: controller.scrollController,
       padding: const EdgeInsets.symmetric(
         horizontal: RomRomSizes.containerPadding,
         vertical: RomRomSizes.medium,
@@ -171,40 +177,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         final message = messages[index];
         return ChatBubble(message: message, showAvatar: !message.isMe);
       },
-    );
-  }
-
-  bool _isDifferentTime(DateTime a, DateTime b) {
-    return a.difference(b).inMinutes.abs() > 2;
-  }
-
-  Widget _buildDateHeader(ThemeData theme, DateTime date) {
-    final now = DateTime.now();
-    final isToday =
-        date.year == now.year && date.month == now.month && date.day == now.day;
-    final timeStr = DateFormat('h:mm a').format(date);
-    final headerText = isToday
-        ? 'Today $timeStr'
-        : DateFormat('MMM d, h:mm a').format(date);
-
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: RomRomSizes.medium),
-        padding: const EdgeInsets.symmetric(
-          horizontal: RomRomSizes.medium,
-          vertical: RomRomSizes.spaceBetweenItem,
-        ),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(RomRomSizes.xl),
-        ),
-        child: Text(
-          headerText,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,30 @@ class ChatBubble extends StatelessWidget {
 
   final ChatMessage message;
   final bool showAvatar;
+
+  Widget _buildStatusIndicator(MessageStatus status, ThemeData theme) {
+    switch (status) {
+      case MessageStatus.sending:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CupertinoActivityIndicator(radius: 6, animating: true),
+            SizedBox(width: RomRomSizes.spaceBetweenItem),
+            Text(
+              'Sending...',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 10,
+              ),
+            ),
+          ],
+        );
+      case MessageStatus.sent:
+      case MessageStatus.read:
+        // Don't show any status indicator when sent
+        return SizedBox.shrink();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,13 +122,9 @@ class ChatBubble extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (message.isMe && message.isRead) ...[
+                    if (message.isMe) ...[
                       const SizedBox(width: RomRomSizes.spaceBetweenItem),
-                      Icon(
-                        Icons.done_all,
-                        size: RomRomSizes.iconSmall,
-                        color: theme.colorScheme.primary,
-                      ),
+                      _buildStatusIndicator(message.status, theme),
                     ],
                   ],
                 ),

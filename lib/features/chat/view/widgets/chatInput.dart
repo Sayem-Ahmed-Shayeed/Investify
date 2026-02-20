@@ -66,26 +66,44 @@ class _ChatInputState extends State<ChatInput> {
               ),
             ),
             const SizedBox(width: RomRomSizes.medium),
-            GestureDetector(
-              onTap: () {
-                controller.sendMessage(widget.roomID);
-                _textController.clear();
-              },
-              child: Container(
-                padding: const EdgeInsets.all(RomRomSizes.medium),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  shape: BoxShape.circle,
+            Obx(() {
+              final sending = controller.isSending.value;
+              return GestureDetector(
+                onTap: sending
+                    ? null
+                    : () {
+                        controller.sendMessage(widget.roomID);
+                        _textController.clear();
+                      },
+                child: Container(
+                  padding: const EdgeInsets.all(RomRomSizes.medium),
+                  decoration: BoxDecoration(
+                    color: sending
+                        ? theme.colorScheme.primary.withValues(alpha: 0.6)
+                        : theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: sending
+                      ? SizedBox(
+                          width: RomRomSizes.iconMedium,
+                          height: RomRomSizes.iconMedium,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        )
+                      : Icon(
+                          Icons.send,
+                          size: RomRomSizes.iconMedium,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
+                        ),
                 ),
-                child: Icon(
-                  Icons.send,
-                  size: RomRomSizes.iconMedium,
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.black
-                      : Colors.white,
-                ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

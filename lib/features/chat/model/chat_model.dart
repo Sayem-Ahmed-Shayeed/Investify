@@ -1,3 +1,5 @@
+enum MessageStatus { sending, sent, read }
+
 class ChatMessage {
   final String id;
   final String senderId;
@@ -5,6 +7,7 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isMe;
   final bool isRead;
+  final MessageStatus status;
 
   const ChatMessage({
     required this.id,
@@ -13,7 +16,29 @@ class ChatMessage {
     required this.timestamp,
     required this.isMe,
     this.isRead = false,
+    this.status = MessageStatus.sent,
   });
+
+  // Add copyWith method for updating message status
+  ChatMessage copyWith({
+    String? id,
+    String? senderId,
+    String? content,
+    DateTime? timestamp,
+    bool? isMe,
+    bool? isRead,
+    MessageStatus? status,
+  }) {
+    return ChatMessage(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      content: content ?? this.content,
+      timestamp: timestamp ?? this.timestamp,
+      isMe: isMe ?? this.isMe,
+      isRead: isRead ?? this.isRead,
+      status: status ?? this.status,
+    );
+  }
 }
 
 class ChatUser {
