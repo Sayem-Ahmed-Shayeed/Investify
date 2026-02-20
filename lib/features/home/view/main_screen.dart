@@ -25,18 +25,14 @@ class _MainScreenState extends State<MainScreen> {
     final theme = Theme.of(context);
 
     return Obx(() {
-      final isProfileTab = navBarController.currentTabIndex.value == 4;
-
       return Scaffold(
         key: _scaffoldKey,
-        drawer: isProfileTab ? const SettingsDrawer() : null,
+        drawer: const SettingsDrawer(),
         appBar: AppBar(
-          leading: isProfileTab
-              ? IconButton(
-                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                  icon: const Icon(Icons.menu),
-                )
-              : null,
+          leading: IconButton(
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            icon: const Icon(Icons.menu),
+          ),
           title: Text('Investify', style: theme.textTheme.headlineMedium),
           centerTitle: true,
           backgroundColor: Colors.transparent,

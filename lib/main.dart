@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/dependency_injection/app_binding.dart';
@@ -13,16 +14,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize SharedPreferences and ThemeController
   await SharedPreferences.getInstance();
   final themeController = Get.put(ThemeController());
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
-  // Wait for theme to load from prefs
-  await Future.delayed(const Duration(milliseconds: 100));
+  OneSignal.initialize("c5a20964-3ddf-4832-84ac-fbe3f3e6a458");
+
+  OneSignal.Notifications.requestPermission(true);
+  OneSignal.Notifications.addClickListener((event) {});
+  OneSignal.Notifications.addForegroundWillDisplayListener((event) {});
 
   runApp(Investify(themeController: themeController));
 }

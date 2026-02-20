@@ -55,11 +55,8 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Fetch user profile when controller initializes (if logged in)
     if (_auth.currentUser != null) {
-      // Set Firebase displayName instantly (cached locally, no network call)
       cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
-      // Then fetch the full profile from MongoDB (may override with updated name)
       fetchUserProfile();
     }
   }
@@ -347,7 +344,7 @@ class AuthController extends GetxController {
           age: age.value,
           nidCardUrl: nidCardUrl,
         );
-        // Send email verification
+
         await sendEmailVerification();
         debugPrint('✅ User saved to MongoDB');
       } catch (e) {
@@ -360,7 +357,6 @@ class AuthController extends GetxController {
 
       debugPrint('Navigating to verify email screen...');
 
-      // Navigate to verify email screen and clear stack
       Get.offAll(() => const VerifyEmailScreen());
     } on FirebaseAuthException catch (e) {
       debugPrint('FirebaseAuthException: ${e.code} - ${e.message}');
@@ -422,6 +418,15 @@ class AuthController extends GetxController {
   /// Stop email verification check
   void stopEmailVerificationCheck() {
     _verificationTimer?.cancel();
+  }
+
+  String? getCurrentUserId() {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return null;
+    }
   }
 
   /// Send password reset email

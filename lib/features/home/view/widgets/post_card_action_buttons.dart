@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/features/auth/controller/auth_controller.dart';
 
 import '../../../../utils/theme/app_colors.dart';
+import '../../../chat/controller/chat_controller.dart';
+import '../../../chat/view/chat_detail_screen.dart';
 import '../../../post_idea/model/post_idea_model.dart';
 import '../../controller/post_card_controller.dart';
 
@@ -21,6 +24,9 @@ class PostCardActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = Get.isDarkMode;
+    final currentUserId = AuthController().getCurrentUserId();
+    final postedBy = post.userId;
+    final chatController = Get.find<ChatController>();
 
     return Row(
       children: [
@@ -52,7 +58,21 @@ class PostCardActions extends StatelessWidget {
           Flexible(
             child: OutlinedButton(
               onPressed: () {
-                // TODO: make a room and then throw them in chats.
+                final roomId = ChatController.buildRoomId(
+                  currentUserId!,
+                  postedBy!,
+                );
+                chatController.createRoom(
+                  sender: currentUserId,
+                  receiver: postedBy,
+                );
+                Get.to(
+                  () => ChatDetailScreen(
+                    roomID: roomId,
+                    senderUid: currentUserId,
+                    receiverUid: postedBy,
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark

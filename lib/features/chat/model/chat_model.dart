@@ -5,8 +5,6 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isMe;
   final bool isRead;
-  final bool hasHighlightedText;
-  final String? highlightedText;
 
   const ChatMessage({
     required this.id,
@@ -15,8 +13,6 @@ class ChatMessage {
     required this.timestamp,
     required this.isMe,
     this.isRead = false,
-    this.hasHighlightedText = false,
-    this.highlightedText,
   });
 }
 
@@ -51,21 +47,5 @@ class ChatConversation {
     required this.lastMessageTime,
     required this.lastMessage,
     this.unreadCount = 0,
-  });
-}
-
-class ScamAlert {
-  final String id;
-  final String title;
-  final String riskLevel;
-  final String description;
-  final String safetyTipsUrl;
-
-  const ScamAlert({
-    required this.id,
-    required this.title,
-    required this.riskLevel,
-    required this.description,
-    this.safetyTipsUrl = '',
   });
 }
