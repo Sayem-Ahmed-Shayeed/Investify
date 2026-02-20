@@ -1,3 +1,5 @@
+enum MessageStatus { sending, sent, read }
+
 class ChatMessage {
   final String id;
   final String senderId;
@@ -5,8 +7,7 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isMe;
   final bool isRead;
-  final bool hasHighlightedText;
-  final String? highlightedText;
+  final MessageStatus status;
 
   const ChatMessage({
     required this.id,
@@ -15,9 +16,29 @@ class ChatMessage {
     required this.timestamp,
     required this.isMe,
     this.isRead = false,
-    this.hasHighlightedText = false,
-    this.highlightedText,
+    this.status = MessageStatus.sent,
   });
+
+  // Add copyWith method for updating message status
+  ChatMessage copyWith({
+    String? id,
+    String? senderId,
+    String? content,
+    DateTime? timestamp,
+    bool? isMe,
+    bool? isRead,
+    MessageStatus? status,
+  }) {
+    return ChatMessage(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      content: content ?? this.content,
+      timestamp: timestamp ?? this.timestamp,
+      isMe: isMe ?? this.isMe,
+      isRead: isRead ?? this.isRead,
+      status: status ?? this.status,
+    );
+  }
 }
 
 class ChatUser {
@@ -51,21 +72,5 @@ class ChatConversation {
     required this.lastMessageTime,
     required this.lastMessage,
     this.unreadCount = 0,
-  });
-}
-
-class ScamAlert {
-  final String id;
-  final String title;
-  final String riskLevel;
-  final String description;
-  final String safetyTipsUrl;
-
-  const ScamAlert({
-    required this.id,
-    required this.title,
-    required this.riskLevel,
-    required this.description,
-    this.safetyTipsUrl = '',
   });
 }

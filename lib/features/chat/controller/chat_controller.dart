@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/features/auth/services/user_service.dart';
+import 'package:investify/services/notification_services.dart';
 
 import '../model/chat_model.dart';
 
@@ -7,67 +14,188 @@ class ChatController extends GetxController {
   final currentMessages = <ChatMessage>[].obs;
   final messageText = ''.obs;
   final isLoading = false.obs;
+  final isSending = false.obs;
+
+  final _db = FirebaseFirestore.instance;
+  StreamSubscription<QuerySnapshot>? _messagesSubscription;
+
+  final ScrollController scrollController = ScrollController();
+
+  String _currentRoomReceiverUid = '';
+
+  // Simple variable to track which message is currently sending
+  String _sendingMessageId = '';
+
+  String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  static String buildRoomId(String uid1, String uid2) {
+    final sorted = [uid1, uid2]..sort();
+    return '${sorted[0]}_${sorted[1]}';
+  }
 
   @override
   void onInit() {
     super.onInit();
-    _loadDummyConversations();
+    loadConversations();
   }
 
-  void _loadDummyConversations() {
-    final dummyUser = ChatUser(
-      id: '1',
-      name: 'Jonathan V.',
-      avatarUrl: null,
-      isVerified: true,
-      investorLevel: 'Tier 1',
-    );
-
-    final dummyMessages = [
-      ChatMessage(
-        id: '1',
-        senderId: '1',
-        content: "Hi, I'm interested in leading your seed round. Can we expedite the process?",
-        timestamp: DateTime.now().subtract(const Duration(minutes: 6)),
-        isMe: false,
-        isRead: true,
-      ),
-      ChatMessage(
-        id: '2',
-        senderId: '1',
-        content: "Please send the initial deposit via",
-        timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
-        isMe: false,
-        isRead: true,
-        hasHighlightedText: true,
-        highlightedText: 'Wire Transfer',
-      ),
-      ChatMessage(
-        id: '3',
-        senderId: 'me',
-        content: "I can't do that. Let's stick to the VentureConnect escrow system.",
-        timestamp: DateTime.now(),
-        isMe: true,
-        isRead: true,
-      ),
-    ];
-
-    conversations.value = [
-      ChatConversation(
-        id: '1',
-        otherUser: dummyUser,
-        messages: dummyMessages,
-        lastMessageTime: DateTime.now(),
-        lastMessage: "I can't do that. Let's stick to the VentureConnect escrow system.",
-        unreadCount: 0,
-      ),
-    ];
+  @override
+  void onClose() {
+    _messagesSubscription?.cancel();
+    scrollController.dispose();
+    super.onClose();
   }
 
-  void loadConversation(String conversationId) {
-    final conversation = conversations.firstWhereOrNull((c) => c.id == conversationId);
-    if (conversation != null) {
-      currentMessages.value = conversation.messages;
+  // ─── Conversations ───────────────────────────────────────────────────────────
+
+  Future<void> loadConversations() async {
+    if (_currentUid.isEmpty) return;
+    isLoading.value = true;
+    try {
+      final asSender = await _db
+          .collection('chat_rooms')
+          .where('senderUid', isEqualTo: _currentUid)
+          .get();
+      final asReceiver = await _db
+          .collection('chat_rooms')
+          .where('receiverUid', isEqualTo: _currentUid)
+          .get();
+
+      final docs = {...asSender.docs, ...asReceiver.docs}.toList();
+
+      final List<ChatConversation> loaded = [];
+      for (final doc in docs) {
+        final data = doc.data();
+        final isCurrentSender = data['senderUid'] == _currentUid;
+        final otherId = isCurrentSender
+            ? data['receiverUid'] as String
+            : data['senderUid'] as String;
+        final otherName = isCurrentSender
+            ? (data['receiverName'] as String? ?? 'Unknown')
+            : (data['senderName'] as String? ?? 'Unknown');
+
+        final lastMsg = data['lastMessage'] as String? ?? '';
+        final lastMsgTime = data['lastMessageTime'] != null
+            ? (data['lastMessageTime'] as Timestamp).toDate()
+            : DateTime.now();
+
+        loaded.add(
+          ChatConversation(
+            id: doc.id,
+            otherUser: ChatUser(id: otherId, name: otherName),
+            messages: const [],
+            lastMessageTime: lastMsgTime,
+            lastMessage: lastMsg,
+          ),
+        );
+      }
+
+      loaded.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+      conversations.assignAll(loaded);
+    } catch (e) {
+      debugPrint('loadConversations error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ─── Room ────────────────────────────────────────────────────────────────────
+
+  Future<void> createRoom({
+    required String sender,
+    required String receiver,
+  }) async {
+    final roomId = buildRoomId(sender, receiver);
+    final userService = UserService();
+
+    try {
+      final existing = await _db.collection('chat_rooms').doc(roomId).get();
+      if (existing.exists) return;
+
+      final senderName = await userService.getUserName(sender) ?? 'User';
+      final receiverName = await userService.getUserName(receiver) ?? 'User';
+
+      await _db.collection('chat_rooms').doc(roomId).set({
+        'senderUid': sender,
+        'receiverUid': receiver,
+        'senderName': senderName,
+        'receiverName': receiverName,
+        'lastMessage': '',
+        'lastMessageTime': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint('✅ Chat room created: $roomId');
+    } catch (e) {
+      debugPrint('createRoom error: $e');
+    }
+  }
+
+  // ─── Messages ────────────────────────────────────────────────────────────────
+
+  void setCurrentRoom({required String receiverUid}) {
+    _currentRoomReceiverUid = receiverUid;
+  }
+
+  /// Listen to messages - simplified without seen status tracking
+  void listenToMessages(String roomId) {
+    _messagesSubscription?.cancel();
+    currentMessages.clear();
+
+    _messagesSubscription = _db
+        .collection('chat_rooms')
+        .doc(roomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots()
+        .listen((snapshot) {
+          final msgs = snapshot.docs.map((doc) {
+            final data = doc.data();
+            final senderId = data['senderId'] as String;
+            final messageId = doc.id;
+
+            return ChatMessage(
+              id: messageId,
+              senderId: senderId,
+              content: data['content'] as String? ?? '',
+              timestamp:
+                  (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              isMe: senderId == _currentUid,
+              isRead: false,
+              status: MessageStatus.sent,
+            );
+          }).toList();
+
+          if (_sendingMessageId.isNotEmpty) {
+            final alreadyInFirestore = msgs.any(
+              (m) => m.id == _sendingMessageId,
+            );
+            if (alreadyInFirestore) {
+              _sendingMessageId = '';
+            } else {
+              final sendingMsg = currentMessages.firstWhereOrNull(
+                (m) => m.id == _sendingMessageId,
+              );
+              if (sendingMsg != null) {
+                msgs.add(sendingMsg);
+              }
+            }
+          }
+
+          currentMessages.value = msgs;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            scrollToBottom();
+          });
+        }, onError: (e) => debugPrint('messages stream error: $e'));
+  }
+
+  void scrollToBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -75,24 +203,78 @@ class ChatController extends GetxController {
     messageText.value = value;
   }
 
-  void sendMessage() {
-    if (messageText.value.trim().isEmpty) return;
+  Future<void> sendMessage(String roomId) async {
+    final text = messageText.value.trim();
+    if (text.isEmpty || isSending.value) return;
 
-    final newMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      senderId: 'me',
-      content: messageText.value.trim(),
-      timestamp: DateTime.now(),
-      isMe: true,
-      isRead: false,
-    );
-
-    currentMessages.add(newMessage);
     messageText.value = '';
-  }
+    isSending.value = true;
 
-  ChatUser? getCurrentChatUser(String conversationId) {
-    final conversation = conversations.firstWhereOrNull((c) => c.id == conversationId);
-    return conversation?.otherUser;
+    try {
+      final msgRef = _db
+          .collection('chat_rooms')
+          .doc(roomId)
+          .collection('messages')
+          .doc();
+
+      _sendingMessageId = msgRef.id;
+
+      // Add optimistic message with "sending" status
+      final optimisticMessage = ChatMessage(
+        id: msgRef.id,
+        senderId: _currentUid,
+        content: text,
+        timestamp: DateTime.now(),
+        isMe: true,
+        isRead: false,
+        status: MessageStatus.sending,
+      );
+
+      currentMessages.value = [...currentMessages, optimisticMessage];
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        scrollToBottom();
+      });
+
+      // Write to Firestore (no isRead field)
+      await msgRef.set({
+        'senderId': _currentUid,
+        'content': text,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      await _db.collection('chat_rooms').doc(roomId).update({
+        'lastMessage': text,
+        'lastMessageTime': FieldValue.serverTimestamp(),
+      });
+
+      // Clear the sending ID - the listener will update the message to "sent"
+      _sendingMessageId = '';
+
+      debugPrint('✅ Message sent successfully');
+
+      // Send push notification
+      if (_currentRoomReceiverUid.isNotEmpty) {
+        final senderName =
+            await UserService().getUserName(_currentUid) ?? 'Someone';
+        await NotificationService.sendMessageNotification(
+          receiverUid: _currentRoomReceiverUid,
+          senderName: senderName,
+          message: text,
+          roomId: roomId,
+          senderUid: _currentUid,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ sendMessage error: $e');
+      _sendingMessageId = '';
+      // Remove the failed message
+      currentMessages.value = currentMessages
+          .where((m) => m.id != _sendingMessageId)
+          .toList();
+      Get.snackbar('Error', 'Failed to send message. Try again.');
+    } finally {
+      isSending.value = false;
+    }
   }
 }

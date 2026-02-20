@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -92,13 +93,18 @@ class ChatListScreen extends StatelessWidget {
     final timeStr = _formatTime(conversation.lastMessageTime);
 
     return GestureDetector(
-      onTap: () => Get.to(
-        () => ChatDetailScreen(conversationId: conversation.id),
-      ),
+      onTap: () {
+        final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+        Get.to(
+          () => ChatDetailScreen(
+            roomID: conversation.id,
+            senderUid: currentUid,
+            receiverUid: user.id,
+          ),
+        );
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: RomRomSizes.medium,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: RomRomSizes.medium),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -164,7 +170,9 @@ class ChatListScreen extends StatelessWidget {
                               ),
                             ),
                             if (user.isVerified) ...[
-                              const SizedBox(width: RomRomSizes.spaceBetweenItem),
+                              const SizedBox(
+                                width: RomRomSizes.spaceBetweenItem,
+                              ),
                               Icon(
                                 Icons.verified,
                                 size: RomRomSizes.iconSmall,
@@ -177,7 +185,9 @@ class ChatListScreen extends StatelessWidget {
                       Text(
                         timeStr,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ],

@@ -117,6 +117,16 @@ class UserService {
     debugPrint('✅ User profile updated');
   }
 
+  Future<String?> getUserName(String userId) async {
+    try {
+      final user = await getUserById(userId);
+      return user?['name'] as String?;
+    } catch (e) {
+      debugPrint('Error fetching user name: $e');
+      return null;
+    }
+  }
+
   /// Get user by ID (for viewing other users' profiles)
   Future<Map<String, dynamic>?> getUserById(String userId) async {
     if (userId.isEmpty) return null;

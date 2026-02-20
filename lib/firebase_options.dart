@@ -25,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -47,30 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA-cLmZXFiRU1Sx4cry9P5m6PLCtamAwJ0',
-    appId: '1:852355898935:web:01e966c64f03ad1d5ea9b2',
-    messagingSenderId: '852355898935',
-    projectId: 'investify-1eba0',
-    authDomain: 'investify-1eba0.firebaseapp.com',
-    storageBucket: 'investify-1eba0.firebasestorage.app',
-    measurementId: 'G-18JTR7988B',
+    apiKey: 'AIzaSyBlaLuwToH8QzmTTHvjnHfla4DsJ4t-YqI',
+    appId: '1:910713065227:web:10ab21652235e928149c0e',
+    messagingSenderId: '910713065227',
+    projectId: 'invest-fc44a',
+    authDomain: 'invest-fc44a.firebaseapp.com',
+    storageBucket: 'invest-fc44a.firebasestorage.app',
+    measurementId: 'G-HSL34EWHBZ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDn8VSw3cgme-T-7YLDweNqzb42AOurHFA',
-    appId: '1:852355898935:android:c49eeaafeef2f3945ea9b2',
-    messagingSenderId: '852355898935',
-    projectId: 'investify-1eba0',
-    storageBucket: 'investify-1eba0.firebasestorage.app',
+    apiKey: 'AIzaSyBkleYbYU0YRErjRr4p9BDFUg0ly-e5qYY',
+    appId: '1:910713065227:android:b60a1db4d95a4bf5149c0e',
+    messagingSenderId: '910713065227',
+    projectId: 'invest-fc44a',
+    storageBucket: 'invest-fc44a.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBFMEkOIJ0RVCaUyP7uqy3l9diy-FT-Koc',
-    appId: '1:852355898935:ios:82fb43378fac25e85ea9b2',
-    messagingSenderId: '852355898935',
-    projectId: 'investify-1eba0',
-    storageBucket: 'investify-1eba0.firebasestorage.app',
-    iosClientId: '852355898935-dgd03jnga1m1i2ncikhnmp43v0lbdjok.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAy-N3pb3Rk0mu5MdP7tVXe3ufuXtkfQNc',
+    appId: '1:910713065227:ios:f45a88a56a1684a5149c0e',
+    messagingSenderId: '910713065227',
+    projectId: 'invest-fc44a',
+    storageBucket: 'invest-fc44a.firebasestorage.app',
     iosBundleId: 'com.example.investify',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAy-N3pb3Rk0mu5MdP7tVXe3ufuXtkfQNc',
+    appId: '1:910713065227:ios:f45a88a56a1684a5149c0e',
+    messagingSenderId: '910713065227',
+    projectId: 'invest-fc44a',
+    storageBucket: 'invest-fc44a.firebasestorage.app',
+    iosBundleId: 'com.example.investify',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBlaLuwToH8QzmTTHvjnHfla4DsJ4t-YqI',
+    appId: '1:910713065227:web:ec89636ebb309c72149c0e',
+    messagingSenderId: '910713065227',
+    projectId: 'invest-fc44a',
+    authDomain: 'invest-fc44a.firebaseapp.com',
+    storageBucket: 'invest-fc44a.firebasestorage.app',
+    measurementId: 'G-ZX53M2X8N2',
   );
 }

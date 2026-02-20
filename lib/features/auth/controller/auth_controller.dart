@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:investify/features/auth/view/auth_gate.dart';
 import 'package:investify/features/auth/view/verify_email.dart';
 import 'package:investify/features/post_idea/services/media_upload_service.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import '../../profile/controller/profile_controller.dart';
 import '../model/user_model.dart';
@@ -52,15 +53,25 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
+  /// Set up OneSignal with the current user's UID
+  Future<void> _setupOneSignal(String uid) async {
+    try {
+      await OneSignal.login(uid);
+      debugPrint('🔗 OneSignal login successful for UID: $uid');
+    } catch (e) {
+      debugPrint('❌ Error setting up OneSignal: $e');
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
-    // Fetch user profile when controller initializes (if logged in)
     if (_auth.currentUser != null) {
-      // Set Firebase displayName instantly (cached locally, no network call)
       cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
-      // Then fetch the full profile from MongoDB (may override with updated name)
       fetchUserProfile();
+
+      // ✅ Set up OneSignal for returning users
+      _setupOneSignal(_auth.currentUser!.uid);
     }
   }
 
@@ -232,10 +243,17 @@ class AuthController extends GetxController {
 
     isLoading.value = true;
     try {
-      await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email.value.trim(),
         password: password.value,
       );
+
+      // ✅ Set up OneSignal for this user
+      final uid = userCredential.user?.uid;
+      if (uid != null) {
+        await _setupOneSignal(uid);
+      }
+
       _showMessage('Success', 'Login successful!');
       clearFields();
       isLoading.value = false;
@@ -248,8 +266,6 @@ class AuthController extends GetxController {
       if (Get.isRegistered<ProfileController>()) {
         Get.find<ProfileController>().fetchMyPosts();
       }
-
-      // AuthGate will handle navigation
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
       _handleAuthError(e);
@@ -315,6 +331,12 @@ class AuthController extends GetxController {
         password: password.value,
       );
 
+      // ✅ Set up OneSignal for this new user
+      final uid = userCredential.user?.uid;
+      if (uid != null) {
+        await _setupOneSignal(uid);
+      }
+
       debugPrint('User created: ${userCredential.user?.uid}');
 
       // Create user model
@@ -347,7 +369,7 @@ class AuthController extends GetxController {
           age: age.value,
           nidCardUrl: nidCardUrl,
         );
-        // Send email verification
+
         await sendEmailVerification();
         debugPrint('✅ User saved to MongoDB');
       } catch (e) {
@@ -360,7 +382,6 @@ class AuthController extends GetxController {
 
       debugPrint('Navigating to verify email screen...');
 
-      // Navigate to verify email screen and clear stack
       Get.offAll(() => const VerifyEmailScreen());
     } on FirebaseAuthException catch (e) {
       debugPrint('FirebaseAuthException: ${e.code} - ${e.message}');
@@ -424,6 +445,15 @@ class AuthController extends GetxController {
     _verificationTimer?.cancel();
   }
 
+  String? getCurrentUserId() {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return null;
+    }
+  }
+
   /// Send password reset email
   Future<void> sendPasswordResetEmail() async {
     if (email.value.trim().isEmpty) {
@@ -457,6 +487,9 @@ class AuthController extends GetxController {
   /// Logout
   Future<void> logout() async {
     try {
+      // ✅ Logout from OneSignal
+      await OneSignal.logout();
+
       await _auth.signOut();
       clearFields();
 
