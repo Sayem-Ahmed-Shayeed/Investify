@@ -10,6 +10,7 @@ class ApiConfig {
   static const String posts = '/api/posts';
   static const String users = '/api/users';
   static const String sandboxSubmit = '/api/sandbox/submit';
+  static const String sandboxStatus = '/api/sandbox/status';
 
   /// Request timeout duration
   static const Duration timeout = Duration(seconds: 30);

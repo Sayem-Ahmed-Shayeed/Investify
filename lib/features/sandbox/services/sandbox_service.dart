@@ -29,6 +29,26 @@ class SandboxService {
     };
   }
 
+  /// Check if the user has a pending review
+  Future<bool> checkPendingStatus() async {
+    final headers = await _getAuthHeaders();
+
+    final response = await http
+        .get(
+          Uri.parse('${ApiConfig.baseUrl}${ApiConfig.sandboxStatus}'),
+          headers: headers,
+        )
+        .timeout(ApiConfig.timeout);
+
+    if (response.statusCode != 200) {
+      debugPrint('Failed to check sandbox status: ${response.statusCode}');
+      return false; // Default to not pending on error
+    }
+
+    final data = jsonDecode(response.body);
+    return data['isPending'] == true;
+  }
+
   /// Submit sandbox content for AI review via n8n webhook
   Future<String> submitForReview({
     required String caption,

@@ -23,39 +23,149 @@ class SandboxTab extends StatelessWidget {
           ? AppColors.scaffoldBackgroundDark
           : AppColors.scaffoldBackgroundLight,
       body: Obx(() {
-        return Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(RomRomSizes.large),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    _buildHeader(theme),
-                    const SizedBox(height: 20),
+        if (controller.isLoadingStatus.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-                    // Caption Section
-                    _buildCaptionSection(context, controller),
-                    const SizedBox(height: 24),
-
-                    // Pitch Video Section
-                    _buildVideoSection(context, controller),
-                    const SizedBox(height: 24),
-
-                    // Gallery Section
-                    _buildGallerySection(context, controller),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+        if (controller.isPending.value) {
+          return RefreshIndicator(
+            onRefresh: controller.refreshStatus,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 200,
+                child: _buildPendingState(context, controller),
               ),
             ),
+          );
+        }
 
-            // Submit Button
-            _buildSubmitButton(context, controller),
-          ],
+        return RefreshIndicator(
+          onRefresh: controller.refreshStatus,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(RomRomSizes.large),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      _buildHeader(theme),
+                      const SizedBox(height: 20),
+
+                      // Caption Section
+                      _buildCaptionSection(context, controller),
+                      const SizedBox(height: 24),
+
+                      // Pitch Video Section
+                      _buildVideoSection(context, controller),
+                      const SizedBox(height: 24),
+
+                      // Gallery Section
+                      _buildGallerySection(context, controller),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Submit Button
+              _buildSubmitButton(context, controller),
+            ],
+          ),
         );
       }),
+    );
+  }
+
+  Widget _buildPendingState(
+    BuildContext context,
+    SandboxController controller,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(RomRomSizes.large),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Animated icon / pulse effect
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.auto_awesome,
+                  size: 48,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'AI Review in Progress',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Your content is currently being analyzed by our AI models. Please wait for the feedback email.',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: controller.isLoadingStatus.value
+                    ? null
+                    : controller.refreshStatus,
+                icon: controller.isLoadingStatus.value
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                label: const Text('Check Status'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -22,9 +22,34 @@ class SandboxController extends GetxController {
   final galleryImages = <Map<String, dynamic>>[].obs;
   // Each entry: { 'name': String, 'bytes': Uint8List }
 
-  // Loading states
+  // Loading and state
   final isSubmitting = false.obs;
+  final isPending = false.obs; // True if a submission is currently in progress
+  final isLoadingStatus = true.obs; // True while checking initial status
   final uploadStatus = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _checkStatus();
+  }
+
+  /// Check if there's an existing pending submission
+  Future<void> _checkStatus() async {
+    isLoadingStatus.value = true;
+    try {
+      isPending.value = await _sandboxService.checkPendingStatus();
+    } catch (e) {
+      debugPrint('Error checking sandbox status: $e');
+    } finally {
+      isLoadingStatus.value = false;
+    }
+  }
+
+  /// Refresh the tab state completely
+  Future<void> refreshStatus() async {
+    await _checkStatus();
+  }
 
   /// Update caption text
   void updateCaption(String value) {
@@ -158,6 +183,9 @@ class SandboxController extends GetxController {
         caption: captionText.value.trim(),
         media: uploadedMedia,
       );
+
+      // Set UI to pending mode immediately
+      isPending.value = true;
 
       // Clear form
       _clearForm();
