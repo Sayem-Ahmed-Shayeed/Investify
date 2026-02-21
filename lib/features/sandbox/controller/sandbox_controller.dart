@@ -24,8 +24,9 @@ class SandboxController extends GetxController {
 
   // Loading and state
   final isSubmitting = false.obs;
-  final isPending = false.obs; // True if a submission is currently in progress
-  final isLoadingStatus = true.obs; // True while checking initial status
+  final isPending = false.obs;
+  final isReviewed = false.obs;
+  final isLoadingStatus = true.obs;
   final uploadStatus = ''.obs;
 
   @override
@@ -34,11 +35,13 @@ class SandboxController extends GetxController {
     _checkStatus();
   }
 
-  /// Check if there's an existing pending submission
+  /// Check if there's an existing pending or reviewed submission
   Future<void> _checkStatus() async {
     isLoadingStatus.value = true;
     try {
-      isPending.value = await _sandboxService.checkPendingStatus();
+      final status = await _sandboxService.checkStatus();
+      isPending.value = status == 'pending';
+      isReviewed.value = status == 'reviewed';
     } catch (e) {
       debugPrint('Error checking sandbox status: $e');
     } finally {
@@ -49,6 +52,17 @@ class SandboxController extends GetxController {
   /// Refresh the tab state completely
   Future<void> refreshStatus() async {
     await _checkStatus();
+  }
+
+  /// User acknowledges the review and returns to normal form
+  Future<void> acknowledgeReview() async {
+    try {
+      await _sandboxService.acknowledgeReview();
+      isReviewed.value = false;
+      isPending.value = false;
+    } catch (e) {
+      debugPrint('Error acknowledging review: $e');
+    }
   }
 
   /// Update caption text

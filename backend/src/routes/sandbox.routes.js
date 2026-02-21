@@ -9,11 +9,12 @@ const Sandbox = require('../models/sandbox.model');
 router.get('/status', async (req, res) => {
   try {
     const userId = req.user.uid;
-    const pendingSubmission = await Sandbox.findOne({ userId, status: 'pending' });
 
+    // Check for pending first
+    const pendingSubmission = await Sandbox.findOne({ userId, status: 'pending' });
     if (pendingSubmission) {
       return res.json({
-        isPending: true,
+        status: 'pending',
         submission: {
           id: pendingSubmission._id,
           submittedAt: pendingSubmission.createdAt,
@@ -21,7 +22,20 @@ router.get('/status', async (req, res) => {
       });
     }
 
-    res.json({ isPending: false });
+    // Check for recently reviewed (not yet acknowledged by user)
+    const reviewedSubmission = await Sandbox.findOne({ userId, status: 'reviewed' })
+      .sort({ updatedAt: -1 });
+    if (reviewedSubmission) {
+      return res.json({
+        status: 'reviewed',
+        submission: {
+          id: reviewedSubmission._id,
+          submittedAt: reviewedSubmission.createdAt,
+        }
+      });
+    }
+
+    res.json({ status: 'idle' });
   } catch (error) {
     console.error('Error checking sandbox status:', error);
     res.status(500).json({ error: 'Failed to check status' });
@@ -29,7 +43,25 @@ router.get('/status', async (req, res) => {
 });
 
 // ==============================================================================
-// 2. POST /api/sandbox/submit
+// 2. POST /api/sandbox/acknowledge
+// User acknowledges the review result, clearing the 'reviewed' state
+// ==============================================================================
+router.post('/acknowledge', async (req, res) => {
+  try {
+    const userId = req.user.uid;
+    await Sandbox.updateMany(
+      { userId, status: 'reviewed' },
+      { $set: { status: 'acknowledged' } }
+    );
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error acknowledging sandbox review:', error);
+    res.status(500).json({ error: 'Failed to acknowledge' });
+  }
+});
+
+// ==============================================================================
+// 3. POST /api/sandbox/submit
 // Receive submission, save to MongoDB as pending, trigger n8n
 // ==============================================================================
 router.post('/submit', async (req, res) => {

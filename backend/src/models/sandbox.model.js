@@ -26,7 +26,7 @@ const SandboxSchema = new mongoose.Schema({
     }],
     status: {
         type: String,
-        enum: ['pending', 'reviewed', 'failed'],
+        enum: ['pending', 'reviewed', 'failed', 'acknowledged'],
         default: 'pending',
         index: true
     },

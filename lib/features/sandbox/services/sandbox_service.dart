@@ -29,8 +29,8 @@ class SandboxService {
     };
   }
 
-  /// Check if the user has a pending review
-  Future<bool> checkPendingStatus() async {
+  /// Check current sandbox status: 'pending', 'reviewed', or 'idle'
+  Future<String> checkStatus() async {
     final headers = await _getAuthHeaders();
 
     final response = await http
@@ -42,11 +42,23 @@ class SandboxService {
 
     if (response.statusCode != 200) {
       debugPrint('Failed to check sandbox status: ${response.statusCode}');
-      return false; // Default to not pending on error
+      return 'idle';
     }
 
     final data = jsonDecode(response.body);
-    return data['isPending'] == true;
+    return (data['status'] as String?) ?? 'idle';
+  }
+
+  /// Acknowledge the review result so user can submit again
+  Future<void> acknowledgeReview() async {
+    final headers = await _getAuthHeaders();
+
+    await http
+        .post(
+          Uri.parse('${ApiConfig.baseUrl}/api/sandbox/acknowledge'),
+          headers: headers,
+        )
+        .timeout(ApiConfig.timeout);
   }
 
   /// Submit sandbox content for AI review via n8n webhook
