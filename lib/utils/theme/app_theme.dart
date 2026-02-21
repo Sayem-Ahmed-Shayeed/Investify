@@ -122,7 +122,6 @@ class AppTheme {
       primary: AppColors.primaryLight,
       secondary: AppColors.primaryLight,
       surface: AppColors.cardLight,
-      background: AppColors.gradientBottomLight,
       onPrimary: AppColors.buttonTextLight,
       onSecondary: AppColors.textPrimaryLight,
       onSurface: AppColors.textPrimaryLight,

@@ -18,6 +18,8 @@ class ChatController extends GetxController {
 
   final _db = FirebaseFirestore.instance;
   StreamSubscription<QuerySnapshot>? _messagesSubscription;
+  StreamSubscription<QuerySnapshot>? _senderConversationsSub;
+  StreamSubscription<QuerySnapshot>? _receiverConversationsSub;
 
   final ScrollController scrollController = ScrollController();
 
@@ -42,29 +44,37 @@ class ChatController extends GetxController {
   @override
   void onClose() {
     _messagesSubscription?.cancel();
+    _senderConversationsSub?.cancel();
+    _receiverConversationsSub?.cancel();
     scrollController.dispose();
     super.onClose();
   }
 
   // ─── Conversations ───────────────────────────────────────────────────────────
 
-  Future<void> loadConversations() async {
+  void loadConversations() {
     if (_currentUid.isEmpty) return;
     isLoading.value = true;
-    try {
-      final asSender = await _db
-          .collection('chat_rooms')
-          .where('senderUid', isEqualTo: _currentUid)
-          .get();
-      final asReceiver = await _db
-          .collection('chat_rooms')
-          .where('receiverUid', isEqualTo: _currentUid)
-          .get();
 
-      final docs = {...asSender.docs, ...asReceiver.docs}.toList();
+    // Cancel previous subscriptions
+    _senderConversationsSub?.cancel();
+    _receiverConversationsSub?.cancel();
+
+    // Track raw docs from both queries
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> senderDocs = [];
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> receiverDocs = [];
+
+    void mergeAndUpdate() {
+      final docsMap = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+      for (final doc in senderDocs) {
+        docsMap[doc.id] = doc;
+      }
+      for (final doc in receiverDocs) {
+        docsMap[doc.id] = doc;
+      }
 
       final List<ChatConversation> loaded = [];
-      for (final doc in docs) {
+      for (final doc in docsMap.values) {
         final data = doc.data();
         final isCurrentSender = data['senderUid'] == _currentUid;
         final otherId = isCurrentSender
@@ -92,11 +102,38 @@ class ChatController extends GetxController {
 
       loaded.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
       conversations.assignAll(loaded);
-    } catch (e) {
-      debugPrint('loadConversations error: $e');
-    } finally {
       isLoading.value = false;
     }
+
+    _senderConversationsSub = _db
+        .collection('chat_rooms')
+        .where('senderUid', isEqualTo: _currentUid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            senderDocs = snapshot.docs;
+            mergeAndUpdate();
+          },
+          onError: (e) {
+            debugPrint('loadConversations sender error: $e');
+            isLoading.value = false;
+          },
+        );
+
+    _receiverConversationsSub = _db
+        .collection('chat_rooms')
+        .where('receiverUid', isEqualTo: _currentUid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            receiverDocs = snapshot.docs;
+            mergeAndUpdate();
+          },
+          onError: (e) {
+            debugPrint('loadConversations receiver error: $e');
+            isLoading.value = false;
+          },
+        );
   }
 
   // ─── Room ────────────────────────────────────────────────────────────────────
@@ -105,6 +142,10 @@ class ChatController extends GetxController {
     required String sender,
     required String receiver,
   }) async {
+    if (sender == receiver) {
+      debugPrint('⚠️ Cannot create chat room with yourself');
+      return;
+    }
     final roomId = buildRoomId(sender, receiver);
     final userService = UserService();
 
