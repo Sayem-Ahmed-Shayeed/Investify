@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const uploadRoutes = require('./routes/upload.routes');
 const postRoutes = require('./routes/post.routes');
 const userRoutes = require('./routes/user.routes');
+const sandboxRoutes = require('./routes/sandbox.routes');
+const sandboxWebhookRoutes = require('./routes/sandbox_webhook.routes');
 const { verifyFirebaseToken } = require('./middleware/auth.middleware');
 
 const app = express();
@@ -54,12 +56,14 @@ app.get('/health', (req, res) => {
 app.use('/api/uploads', verifyFirebaseToken, uploadLimiter, uploadRoutes);
 app.use('/api/posts', verifyFirebaseToken, postRoutes);
 app.use('/api/users', verifyFirebaseToken, userRoutes);
+app.use('/api/sandbox/webhook', sandboxWebhookRoutes); // NO auth middleware (n8n callback point)
+app.use('/api/sandbox', verifyFirebaseToken, sandboxRoutes); // WITH auth middleware (Flutter points)
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
+    error: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
       : err.message
   });
 });

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class HomeTab extends StatelessWidget {
     final controller = Get.put(HomeFeedController());
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
       backgroundColor: isDark
@@ -99,6 +101,7 @@ class HomeTab extends StatelessWidget {
               return PostCard(
                 post: post,
                 onLike: () => controller.toggleLike(post.id!),
+                isOwnPost: post.userId == currentUid,
               );
             },
           ),
