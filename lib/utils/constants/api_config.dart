@@ -9,6 +9,7 @@ class ApiConfig {
   static const String batchPresignedUrls = '/api/uploads/batch-presigned-urls';
   static const String posts = '/api/posts';
   static const String users = '/api/users';
+  static const String sandboxSubmit = '/api/sandbox/submit';
 
   /// Request timeout duration
   static const Duration timeout = Duration(seconds: 30);
