@@ -102,6 +102,8 @@ class HomeTab extends StatelessWidget {
                 post: post,
                 onLike: () => controller.toggleLike(post.id!),
                 isOwnPost: post.userId == currentUid,
+                onEdit: () => controller.editPost(post),
+                onDelete: () => controller.deletePost(post.id!),
               );
             },
           ),

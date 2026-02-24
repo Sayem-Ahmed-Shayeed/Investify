@@ -14,12 +14,16 @@ class PostCard extends StatelessWidget {
   final PostIdeaModel post;
   final VoidCallback onLike;
   final bool isOwnPost;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const PostCard({
     super.key,
     required this.post,
     required this.onLike,
     this.isOwnPost = false,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -54,7 +58,13 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PostCardHeader(post: post, controller: controller),
+          PostCardHeader(
+            post: post,
+            controller: controller,
+            isOwnPost: isOwnPost,
+            onEdit: onEdit,
+            onDelete: onDelete,
+          ),
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
 
           if (post.media.isNotEmpty)

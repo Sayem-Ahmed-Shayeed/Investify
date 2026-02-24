@@ -113,7 +113,9 @@ class Profile extends StatelessWidget {
                   return PostCard(
                     post: post,
                     onLike: () {},
-                    isOwnPost: true, // Hide Connect/Save buttons for own posts
+                    isOwnPost: true,
+                    onEdit: () => profileController.editPost(post),
+                    onDelete: () => profileController.deletePost(post.id!),
                   );
                 }, childCount: profileController.posts.length),
               );
