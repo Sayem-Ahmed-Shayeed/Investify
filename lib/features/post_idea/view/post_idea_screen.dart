@@ -107,6 +107,7 @@ class PostIdeaScreen extends StatelessWidget {
       child: Column(
         children: [
           TextField(
+            controller: controller.contentController,
             onChanged: controller.updateContent,
             maxLines: 5,
             decoration: InputDecoration(
@@ -127,38 +128,44 @@ class PostIdeaScreen extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Implement AI enhance feature
-                  Get.snackbar(
-                    'Coming Soon',
-                    'AI enhancement feature coming soon!',
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
-                icon: Icon(
-                  Icons.auto_awesome,
-                  size: RomRomSizes.large,
-                  color: theme.colorScheme.primary,
-                ),
-                label: Text(
-                  'ENHANCE',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
+              child: Obx(
+                () => OutlinedButton.icon(
+                  onPressed: controller.isEnhancing.value
+                      ? null
+                      : controller.enhanceContent,
+                  icon: controller.isEnhancing.value
+                      ? SizedBox(
+                          width: RomRomSizes.large,
+                          height: RomRomSizes.large,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: theme.colorScheme.primary,
+                          ),
+                        )
+                      : Icon(
+                          Icons.auto_awesome,
+                          size: RomRomSizes.large,
+                          color: theme.colorScheme.primary,
+                        ),
+                  label: Text(
+                    controller.isEnhancing.value ? 'ENHANCING...' : 'ENHANCE',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
-                ),
 
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: RomRomSizes.xxl,
-                    vertical: RomRomSizes.small,
-                  ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: RomRomSizes.xxl,
+                      vertical: RomRomSizes.small,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
 
-                  side: BorderSide(color: theme.colorScheme.primary),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(RomRomSizes.medium),
+                    side: BorderSide(color: theme.colorScheme.primary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(RomRomSizes.medium),
+                    ),
                   ),
                 ),
               ),

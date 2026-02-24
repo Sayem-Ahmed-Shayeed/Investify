@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:investify/utils/constants/api_config.dart';
 import 'package:investify/utils/sizes/size.dart';
 
 import '../services/media_upload_service.dart';
@@ -22,8 +27,12 @@ class PostIdeaController extends GetxController {
   // UI state
   final isPublishing = false.obs;
   final isSavingDraft = false.obs;
+  final isEnhancing = false.obs;
   final uploadProgress = 0.0.obs;
   final uploadStatus = ''.obs;
+
+  // Text editing controller for programmatic text updates
+  final contentController = TextEditingController();
 
   // Services
   final _mediaUploadService = MediaUploadService();
@@ -33,6 +42,68 @@ class PostIdeaController extends GetxController {
   /// Update content text
   void updateContent(String value) {
     content.value = value;
+  }
+
+  @override
+  void onClose() {
+    contentController.dispose();
+    super.onClose();
+  }
+
+  /// Enhance content text using AI (grammar/spelling correction)
+  Future<void> enhanceContent() async {
+    final text = content.value.trim();
+    if (text.isEmpty) {
+      _showMessage(
+        'Nothing to enhance',
+        'Please write some content first.',
+        isError: true,
+      );
+      return;
+    }
+
+    isEnhancing.value = true;
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception('Not authenticated');
+      final token = await user.getIdToken();
+
+      final response = await http
+          .post(
+            Uri.parse('${ApiConfig.baseUrl}${ApiConfig.enhance}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode({'text': text}),
+          )
+          .timeout(ApiConfig.timeout);
+
+      if (response.statusCode != 200) {
+        throw Exception('Enhancement failed');
+      }
+
+      final data = jsonDecode(response.body);
+      final enhancedText = data['enhancedText'] as String?;
+
+      if (enhancedText != null && enhancedText.isNotEmpty) {
+        content.value = enhancedText;
+        contentController.text = enhancedText;
+        contentController.selection = TextSelection.fromPosition(
+          TextPosition(offset: enhancedText.length),
+        );
+        _showMessage('Enhanced! ✨', 'Your text has been improved.');
+      }
+    } catch (e) {
+      debugPrint('Enhance error: $e');
+      _showMessage(
+        'Error',
+        'Failed to enhance text. Try again.',
+        isError: true,
+      );
+    } finally {
+      isEnhancing.value = false;
+    }
   }
 
   Future<void> pickVideo() async {
