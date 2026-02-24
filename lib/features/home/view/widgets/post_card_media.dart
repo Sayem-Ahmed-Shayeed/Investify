@@ -45,11 +45,11 @@ class PostCardMedia extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: images.length == 1
-                ? AspectRatio(
-                    aspectRatio: 16 / 9,
+                ? ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
                     child: CachedNetworkImage(
                       imageUrl: images.first.url,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                       width: double.infinity,
                       placeholder: (_, __) => _buildMediaPlaceholder(isDark),
                       errorWidget: (_, __, ___) =>

@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:investify/utils/constants/api_config.dart';
 import 'package:investify/utils/sizes/size.dart';
 
+import '../../home/controller/home_feed_controller.dart';
+import '../../home/controller/nav_bar_controller.dart';
 import '../services/media_upload_service.dart';
 import '../services/post_service.dart';
 import '../services/video_thumbnail_service.dart';
@@ -244,8 +246,14 @@ class PostIdeaController extends GetxController {
       uploadStatus.value = '';
       _showMessage('Success', 'Post published successfully!');
       _clearForm();
-      Get.back();
-      Get.back();
+
+      // Switch to home tab and refresh feed
+      if (Get.isRegistered<NavBarController>()) {
+        Get.find<NavBarController>().onTabChanged(0);
+      }
+      if (Get.isRegistered<HomeFeedController>()) {
+        Get.find<HomeFeedController>().refreshPosts();
+      }
     } catch (e) {
       isPublishing.value = false;
       uploadStatus.value = '';
