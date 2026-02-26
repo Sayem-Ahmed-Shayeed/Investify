@@ -5,9 +5,9 @@ import '../../../../utils/sizes/size.dart';
 Widget buildSectionTitle(ThemeData theme, String title) {
   return Padding(
     padding: const EdgeInsets.only(
-      left: RomRomSizes.small,
-      bottom: RomRomSizes.roundedButtonCorner,
-      top: RomRomSizes.small,
+      left: MySizes.small,
+      bottom: MySizes.roundedButtonCorner,
+      top: MySizes.small,
     ),
     child: Text(
       title.toUpperCase(),

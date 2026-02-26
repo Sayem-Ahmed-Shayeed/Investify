@@ -51,7 +51,7 @@ class PostIdeaScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(RomRomSizes.large),
+                padding: const EdgeInsets.all(MySizes.large),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -115,15 +115,15 @@ class PostIdeaScreen extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(RomRomSizes.medium),
+              contentPadding: const EdgeInsets.all(MySizes.medium),
             ),
             style: theme.textTheme.bodyLarge,
           ),
           // Enhance Button
           Padding(
             padding: EdgeInsetsGeometry.symmetric(
-              horizontal: RomRomSizes.medium,
-              vertical: RomRomSizes.small,
+              horizontal: MySizes.medium,
+              vertical: MySizes.small,
             ),
             child: Align(
               alignment: Alignment.centerRight,
@@ -134,15 +134,15 @@ class PostIdeaScreen extends StatelessWidget {
                       : controller.enhanceContent,
                   icon: controller.isEnhancing.value
                       ? SizedBox(
-                          width: RomRomSizes.large,
-                          height: RomRomSizes.large,
+                          width: MySizes.large,
+                          height: MySizes.large,
                           child: CupertinoActivityIndicator(
                             color: theme.colorScheme.primary,
                           ),
                         )
                       : Icon(
                           Icons.auto_awesome,
-                          size: RomRomSizes.large,
+                          size: MySizes.large,
                           color: theme.colorScheme.primary,
                         ),
                   label: Text(
@@ -154,15 +154,15 @@ class PostIdeaScreen extends StatelessWidget {
 
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: RomRomSizes.xxl,
-                      vertical: RomRomSizes.small,
+                      horizontal: MySizes.xxl,
+                      vertical: MySizes.small,
                     ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
 
                     side: BorderSide(color: theme.colorScheme.primary),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(RomRomSizes.medium),
+                      borderRadius: BorderRadius.circular(MySizes.medium),
                     ),
                   ),
                 ),

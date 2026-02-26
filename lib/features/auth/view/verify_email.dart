@@ -163,7 +163,7 @@ class _VerifyEmailCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.2,
@@ -186,9 +186,9 @@ class _VerifyEmailCard extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Verify Your Email", style: theme.textTheme.headlineMedium),
-          const SizedBox(height: RomRomSizes.spaceBetweenItem),
+          const SizedBox(height: MySizes.spaceBetweenItem),
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
@@ -210,7 +210,7 @@ class _VerifyEmailCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           // Loading indicator
           Row(
@@ -229,7 +229,7 @@ class _VerifyEmailCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements * 2),
+          const SizedBox(height: MySizes.spaceBetweenElements * 2),
 
           // Resend button
           SizedBox(
@@ -251,7 +251,7 @@ class _VerifyEmailCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Logout button
           TextButton(

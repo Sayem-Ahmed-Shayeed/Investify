@@ -93,7 +93,7 @@ class _RegisterCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.2,
@@ -112,19 +112,19 @@ class _RegisterCard extends StatelessWidget {
             ),
             child: Icon(
               Icons.person_add,
-              size: RomRomSizes.xxxxl,
+              size: MySizes.xxxxl,
               color: theme.iconTheme.color,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Create Account", style: theme.textTheme.headlineMedium),
-          const SizedBox(height: RomRomSizes.spaceBetweenItem),
+          const SizedBox(height: MySizes.spaceBetweenItem),
           Text(
             "Join us to start your investment journey",
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements * 2),
+          const SizedBox(height: MySizes.spaceBetweenElements * 2),
 
           // Name field
           InputField(
@@ -132,7 +132,7 @@ class _RegisterCard extends StatelessWidget {
             icon: Icons.person,
             onChanged: (v) => controller.name.value = v,
           ),
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Email field
           InputField(
@@ -140,7 +140,7 @@ class _RegisterCard extends StatelessWidget {
             icon: Icons.email,
             onChanged: (v) => controller.email.value = v,
           ),
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Age field
           InputField(
@@ -149,7 +149,7 @@ class _RegisterCard extends StatelessWidget {
             keyboardType: TextInputType.number,
             onChanged: (v) => controller.age.value = int.tryParse(v) ?? 0,
           ),
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Password field
           Obx(
@@ -168,7 +168,7 @@ class _RegisterCard extends StatelessWidget {
               onChanged: (v) => controller.password.value = v,
             ),
           ),
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Confirm password field
           Obx(
@@ -187,12 +187,12 @@ class _RegisterCard extends StatelessWidget {
               onChanged: (v) => controller.confirmPassword.value = v,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           // NID Card Image Picker
           _NidCardPicker(controller: controller, theme: theme, isDark: isDark),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           // Register button
           SizedBox(
@@ -219,7 +219,7 @@ class _RegisterCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +265,7 @@ class _NidCardPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("NID Card Image", style: theme.textTheme.titleMedium),
-        const SizedBox(height: RomRomSizes.small),
+        const SizedBox(height: MySizes.small),
         Obx(
           () => GestureDetector(
             onTap: controller.pickNidCardImage,

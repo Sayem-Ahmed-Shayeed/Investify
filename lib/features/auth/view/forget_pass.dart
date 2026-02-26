@@ -103,7 +103,7 @@ class _EmailSentCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.2,
@@ -124,15 +124,15 @@ class _EmailSentCard extends StatelessWidget {
               color: Colors.green,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Email Sent!", style: theme.textTheme.headlineMedium),
-          const SizedBox(height: RomRomSizes.spaceBetweenItem),
+          const SizedBox(height: MySizes.spaceBetweenItem),
           Text(
             "We've sent a password reset link to",
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: RomRomSizes.small),
+          const SizedBox(height: MySizes.small),
           Text(
             controller.email.value,
             textAlign: TextAlign.center,
@@ -140,13 +140,13 @@ class _EmailSentCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text(
             "Please check your inbox and click the link\nto reset your password.",
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements * 2),
+          const SizedBox(height: MySizes.spaceBetweenElements * 2),
 
           // Back to login button
           SizedBox(
@@ -167,7 +167,7 @@ class _EmailSentCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           // Resend button
           TextButton(
@@ -205,7 +205,7 @@ class _ForgetPasswordCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.2,
@@ -228,15 +228,15 @@ class _ForgetPasswordCard extends StatelessWidget {
               color: theme.iconTheme.color,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Reset Password", style: theme.textTheme.headlineMedium),
-          const SizedBox(height: RomRomSizes.spaceBetweenItem),
+          const SizedBox(height: MySizes.spaceBetweenItem),
           Text(
             "Enter your email address and we'll send you\na link to reset your password.",
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements * 2),
+          const SizedBox(height: MySizes.spaceBetweenElements * 2),
 
           // Email field
           InputField(
@@ -245,7 +245,7 @@ class _ForgetPasswordCard extends StatelessWidget {
             onChanged: (v) => controller.email.value = v,
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           // Reset button
           SizedBox(
@@ -272,7 +272,7 @@ class _ForgetPasswordCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -26,12 +26,12 @@ class SectionCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(
-          vertical: RomRomSizes.sectionPaddingVertical,
-          horizontal: RomRomSizes.sectionPaddingHorizontal,
+          vertical: MySizes.sectionPaddingVertical,
+          horizontal: MySizes.sectionPaddingHorizontal,
         ),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+          borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
           border: Border.all(
             color: theme.colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
@@ -42,18 +42,18 @@ class SectionCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+              padding: const EdgeInsets.all(MySizes.containerPadding),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                size: RomRomSizes.iconLarge,
+                size: MySizes.iconLarge,
                 color: theme.colorScheme.primary,
               ),
             ),
-            const SizedBox(height: RomRomSizes.containerPadding),
+            const SizedBox(height: MySizes.containerPadding),
             Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(

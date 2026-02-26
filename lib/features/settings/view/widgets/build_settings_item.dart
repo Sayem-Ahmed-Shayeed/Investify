@@ -30,31 +30,31 @@ class BuildSettingsItem extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: RomRomSizes.containerPadding,
-            vertical: RomRomSizes.medium,
+            horizontal: MySizes.containerPadding,
+            vertical: MySizes.medium,
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(RomRomSizes.roundedButtonCorner),
+                padding: const EdgeInsets.all(MySizes.roundedButtonCorner),
                 decoration: BoxDecoration(
                   color: (iconColor ?? theme.colorScheme.primary).withValues(
                     alpha: 0.15,
                   ),
                   borderRadius: BorderRadius.circular(
-                    RomRomSizes.roundedButtonCorner,
+                    MySizes.roundedButtonCorner,
                   ),
                 ),
                 child: Icon(
                   icon,
-                  size: RomRomSizes.iconMedium,
+                  size: MySizes.iconMedium,
                   color: iconColor ?? theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(width: RomRomSizes.medium),
+              const SizedBox(width: MySizes.medium),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

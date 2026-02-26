@@ -16,7 +16,7 @@ class BottomNavBar extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(color: theme.colorScheme.surface),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: RomRomSizes.small),
+          padding: const EdgeInsets.symmetric(vertical: MySizes.small),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -53,19 +53,12 @@ class BottomNavBar extends StatelessWidget {
                       clickedTabIndex: 3,
                     ),
                   ),
-                if (authController.isVerified.value)
-                  Expanded(
-                    child: NavItem(
-                      icon: Icons.calendar_month,
-                      label: 'Calendar',
-                      clickedTabIndex: 4,
-                    ),
-                  ),
+
                 Expanded(
                   child: NavItem(
                     icon: Icons.person,
                     label: 'Profile',
-                    clickedTabIndex: 5,
+                    clickedTabIndex: 4,
                   ),
                 ),
               ],

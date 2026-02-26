@@ -11,30 +11,30 @@ class DarkModeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
     final theme = Theme.of(context);
-    
+
     return Obx(() {
       return Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: RomRomSizes.containerPadding,
-          vertical: RomRomSizes.small,
+          horizontal: MySizes.containerPadding,
+          vertical: MySizes.small,
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(RomRomSizes.roundedButtonCorner),
+              padding: const EdgeInsets.all(MySizes.roundedButtonCorner),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(
-                  RomRomSizes.roundedButtonCorner,
+                  MySizes.roundedButtonCorner,
                 ),
               ),
               child: Icon(
                 themeController.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                size: RomRomSizes.iconMedium,
+                size: MySizes.iconMedium,
                 color: theme.colorScheme.primary,
               ),
             ),
-            const SizedBox(width: RomRomSizes.medium),
+            const SizedBox(width: MySizes.medium),
             Expanded(
               child: Text(
                 'Dark Mode',

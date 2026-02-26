@@ -28,7 +28,7 @@ class _ChatInputState extends State<ChatInput> {
     final controller = Get.find<ChatController>();
 
     return Container(
-      padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+      padding: const EdgeInsets.all(MySizes.containerPadding),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border(
@@ -45,7 +45,7 @@ class _ChatInputState extends State<ChatInput> {
               child: Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(RomRomSizes.xxl),
+                  borderRadius: BorderRadius.circular(MySizes.xxl),
                 ),
                 child: TextField(
                   controller: _textController,
@@ -57,15 +57,15 @@ class _ChatInputState extends State<ChatInput> {
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: RomRomSizes.large,
-                      vertical: RomRomSizes.medium,
+                      horizontal: MySizes.large,
+                      vertical: MySizes.medium,
                     ),
                   ),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             ),
-            const SizedBox(width: RomRomSizes.medium),
+            const SizedBox(width: MySizes.medium),
             Obx(() {
               final sending = controller.isSending.value;
               return GestureDetector(
@@ -76,7 +76,7 @@ class _ChatInputState extends State<ChatInput> {
                         _textController.clear();
                       },
                 child: Container(
-                  padding: const EdgeInsets.all(RomRomSizes.medium),
+                  padding: const EdgeInsets.all(MySizes.medium),
                   decoration: BoxDecoration(
                     color: sending
                         ? theme.colorScheme.primary.withValues(alpha: 0.6)
@@ -85,8 +85,8 @@ class _ChatInputState extends State<ChatInput> {
                   ),
                   child: sending
                       ? SizedBox(
-                          width: RomRomSizes.iconMedium,
-                          height: RomRomSizes.iconMedium,
+                          width: MySizes.iconMedium,
+                          height: MySizes.iconMedium,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: theme.brightness == Brightness.dark
@@ -96,7 +96,7 @@ class _ChatInputState extends State<ChatInput> {
                         )
                       : Icon(
                           Icons.send,
-                          size: RomRomSizes.iconMedium,
+                          size: MySizes.iconMedium,
                           color: theme.brightness == Brightness.dark
                               ? Colors.black
                               : Colors.white,

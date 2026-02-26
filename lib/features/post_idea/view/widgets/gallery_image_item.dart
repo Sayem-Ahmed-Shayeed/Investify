@@ -13,7 +13,7 @@ class GalleryImageItem extends StatelessWidget {
     super.key,
     required this.imagePath,
     required this.onRemove,
-    this.size = RomRomSizes.galleryItemSize,
+    this.size = MySizes.galleryItemSize,
   });
 
   @override
@@ -26,13 +26,13 @@ class GalleryImageItem extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(RomRomSizes.roundedButtonCorner),
+            borderRadius: BorderRadius.circular(MySizes.roundedButtonCorner),
             border: Border.all(
               color: theme.colorScheme.outline.withValues(alpha: 0.3),
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(RomRomSizes.roundedButtonCorner),
+            borderRadius: BorderRadius.circular(MySizes.roundedButtonCorner),
             child: Image.file(
               File(imagePath),
               fit: BoxFit.cover,
@@ -49,19 +49,19 @@ class GalleryImageItem extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: RomRomSizes.closeButtonPadding,
-          right: RomRomSizes.closeButtonPadding,
+          top: MySizes.closeButtonPadding,
+          right: MySizes.closeButtonPadding,
           child: GestureDetector(
             onTap: onRemove,
             child: Container(
-              padding: const EdgeInsets.all(RomRomSizes.closeButtonPadding),
+              padding: const EdgeInsets.all(MySizes.closeButtonPadding),
               decoration: const BoxDecoration(
                 color: Colors.black,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.close,
-                size: RomRomSizes.closeButtonSize,
+                size: MySizes.closeButtonSize,
                 color: Colors.white,
               ),
             ),

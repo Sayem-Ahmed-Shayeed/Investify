@@ -18,12 +18,12 @@ class AddPhotoButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.all(RomRomSizes.spaceBetweenItem),
+        margin: EdgeInsets.all(MySizes.spaceBetweenItem),
         width: size / 2,
         height: size / 2,
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(RomRomSizes.roundedButtonCorner),
+          borderRadius: BorderRadius.circular(MySizes.roundedButtonCorner),
           border: Border.all(
             color: theme.colorScheme.outline.withValues(alpha: 0.2),
             style: BorderStyle.solid,
@@ -34,15 +34,15 @@ class AddPhotoButton extends StatelessWidget {
           children: [
             Icon(
               Icons.add_photo_alternate_outlined,
-              size: RomRomSizes.iconLarge,
+              size: MySizes.iconLarge,
               color: theme.colorScheme.primary,
             ),
-            const SizedBox(height: RomRomSizes.spaceBetweenItem),
+            const SizedBox(height: MySizes.spaceBetweenItem),
             Text(
               'ADD PHOTO',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                fontSize: RomRomSizes.roundedButtonCorner,
+                fontSize: MySizes.roundedButtonCorner,
               ),
             ),
           ],

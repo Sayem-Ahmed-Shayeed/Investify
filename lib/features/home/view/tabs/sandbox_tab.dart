@@ -56,7 +56,7 @@ class SandboxTab extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(RomRomSizes.large),
+                  padding: const EdgeInsets.all(MySizes.large),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -98,7 +98,7 @@ class SandboxTab extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(RomRomSizes.large),
+        padding: const EdgeInsets.all(MySizes.large),
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class SandboxTab extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(RomRomSizes.large),
+        padding: const EdgeInsets.all(MySizes.large),
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
@@ -268,7 +268,7 @@ class SandboxTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
       ),
       child: Row(
         children: [
@@ -346,7 +346,7 @@ class SandboxTab extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(RomRomSizes.medium),
+              contentPadding: const EdgeInsets.all(MySizes.medium),
             ),
             style: theme.textTheme.bodyLarge,
           ),
@@ -488,14 +488,14 @@ class SandboxTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Image.memory(
                           img['bytes'] as Uint8List,
-                          width: RomRomSizes.galleryItemSize,
-                          height: RomRomSizes.galleryItemSize,
+                          width: MySizes.galleryItemSize,
+                          height: MySizes.galleryItemSize,
                           fit: BoxFit.cover,
                         ),
                       ),
                       Positioned(
-                        top: RomRomSizes.closeButtonPadding,
-                        right: RomRomSizes.closeButtonPadding,
+                        top: MySizes.closeButtonPadding,
+                        right: MySizes.closeButtonPadding,
                         child: GestureDetector(
                           onTap: () => controller.removeImage(index),
                           child: Container(
@@ -506,7 +506,7 @@ class SandboxTab extends StatelessWidget {
                             ),
                             child: const Icon(
                               Icons.close,
-                              size: RomRomSizes.closeButtonSize,
+                              size: MySizes.closeButtonSize,
                               color: Colors.white,
                             ),
                           ),
@@ -531,7 +531,7 @@ class SandboxTab extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(RomRomSizes.large),
+      padding: const EdgeInsets.all(MySizes.large),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
         border: Border(
@@ -561,7 +561,7 @@ class SandboxTab extends StatelessWidget {
                   : AppColors.buttonTextLight,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
-                  RomRomSizes.roundedButtonCorner,
+                  MySizes.roundedButtonCorner,
                 ),
               ),
               disabledBackgroundColor:

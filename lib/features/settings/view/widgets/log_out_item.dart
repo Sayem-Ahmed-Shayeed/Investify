@@ -27,11 +27,11 @@ class LogOutItem extends StatelessWidget {
 
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.all(RomRomSizes.xl),
+        padding: const EdgeInsets.all(MySizes.xl),
         decoration: BoxDecoration(
           color: Get.theme.colorScheme.surface,
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(RomRomSizes.roundedBoxCorner),
+            top: Radius.circular(MySizes.roundedBoxCorner),
           ),
         ),
         child: SafeArea(
@@ -43,7 +43,7 @@ class LogOutItem extends StatelessWidget {
               Container(
                 width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: RomRomSizes.xl),
+                margin: const EdgeInsets.only(bottom: MySizes.xl),
                 decoration: BoxDecoration(
                   color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
@@ -51,18 +51,18 @@ class LogOutItem extends StatelessWidget {
               ),
               // Warning icon
               Container(
-                padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+                padding: const EdgeInsets.all(MySizes.containerPadding),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.logout,
-                  size: RomRomSizes.xxxl,
+                  size: MySizes.xxxl,
                   color: Colors.red,
                 ),
               ),
-              const SizedBox(height: RomRomSizes.xl),
+              const SizedBox(height: MySizes.xl),
               // Title
               Text(
                 'Sign Out',
@@ -70,8 +70,8 @@ class LogOutItem extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: RomRomSizes.small),
-              
+              const SizedBox(height: MySizes.small),
+
               Text(
                 'Are you sure you want to sign out of your account?',
                 textAlign: TextAlign.center,
@@ -79,7 +79,7 @@ class LogOutItem extends StatelessWidget {
                   color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
-              const SizedBox(height: RomRomSizes.xxl),
+              const SizedBox(height: MySizes.xxl),
               // Sign Out Button
               SizedBox(
                 width: double.infinity,
@@ -91,11 +91,11 @@ class LogOutItem extends StatelessWidget {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(
-                      vertical: RomRomSizes.containerPadding,
+                      vertical: MySizes.containerPadding,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                        RomRomSizes.roundedBoxCorner,
+                        MySizes.roundedBoxCorner,
                       ),
                     ),
                   ),
@@ -110,7 +110,7 @@ class LogOutItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: RomRomSizes.medium),
+              const SizedBox(height: MySizes.medium),
               // Cancel Button
               SizedBox(
                 width: double.infinity,
@@ -118,11 +118,11 @@ class LogOutItem extends StatelessWidget {
                   onPressed: () => Get.back(),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                      vertical: RomRomSizes.containerPadding,
+                      vertical: MySizes.containerPadding,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                        RomRomSizes.roundedBoxCorner,
+                        MySizes.roundedBoxCorner,
                       ),
                     ),
                   ),

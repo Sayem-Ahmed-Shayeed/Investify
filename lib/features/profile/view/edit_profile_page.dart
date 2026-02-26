@@ -33,13 +33,13 @@ class EditProfilePage extends StatelessWidget {
         }
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(RomRomSizes.xl),
+          padding: const EdgeInsets.all(MySizes.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Profile Image
               _buildProfileImage(theme, authController),
-              const SizedBox(height: RomRomSizes.xxxl),
+              const SizedBox(height: MySizes.xxxl),
 
               // Name Field
               _buildTextField(
@@ -49,7 +49,7 @@ class EditProfilePage extends StatelessWidget {
                 initialValue: controller.name.value,
                 onChanged: controller.updateName,
               ),
-              const SizedBox(height: RomRomSizes.containerPadding),
+              const SizedBox(height: MySizes.containerPadding),
 
               // Email Field (read-only)
               _buildTextField(
@@ -60,21 +60,20 @@ class EditProfilePage extends StatelessWidget {
                 readOnly: true,
                 helperText: 'Email cannot be changed',
               ),
-              const SizedBox(height: RomRomSizes.containerPadding),
+              const SizedBox(height: MySizes.containerPadding),
 
               // Age Field
               _buildTextField(
                 theme: theme,
                 label: 'Age',
                 icon: Icons.cake_outlined,
-                initialValue:
-                    controller.age.value?.toString() ?? '',
+                initialValue: controller.age.value?.toString() ?? '',
                 onChanged: controller.updateAge,
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: RomRomSizes.containerPadding),
+              const SizedBox(height: MySizes.containerPadding),
 
-              const SizedBox(height: RomRomSizes.xxxl),
+              const SizedBox(height: MySizes.xxxl),
 
               // Save Button
               SizedBox(
@@ -82,8 +81,9 @@ class EditProfilePage extends StatelessWidget {
                 height: 52,
                 child: Obx(
                   () => ElevatedButton(
-                    onPressed:
-                        controller.isSaving.value ? null : controller.saveProfile,
+                    onPressed: controller.isSaving.value
+                        ? null
+                        : controller.saveProfile,
                     child: controller.isSaving.value
                         ? const SizedBox(
                             height: 22,
@@ -100,7 +100,7 @@ class EditProfilePage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: RomRomSizes.xl),
+              const SizedBox(height: MySizes.xl),
             ],
           ),
         );
@@ -119,10 +119,8 @@ class EditProfilePage extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 56,
-              backgroundColor:
-                  theme.colorScheme.primary.withValues(alpha: 0.2),
-              backgroundImage:
-                  imageUrl != null ? NetworkImage(imageUrl) : null,
+              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+              backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
               child: imageUrl == null
                   ? Icon(
                       Icons.person,

@@ -85,14 +85,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         icon: Icon(
           Icons.chevron_left,
           color: theme.colorScheme.onSurface,
-          size: RomRomSizes.xxxl,
+          size: MySizes.xxxl,
         ),
         onPressed: () => Get.back(),
       ),
       title: Row(
         children: [
           CircleAvatar(
-            radius: RomRomSizes.xl,
+            radius: MySizes.xl,
             backgroundColor: theme.colorScheme.surfaceContainerHighest,
             backgroundImage: receiver?.avatarUrl != null
                 ? NetworkImage(receiver!.avatarUrl!)
@@ -101,11 +101,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 ? Icon(
                     Icons.person,
                     color: theme.colorScheme.onSurface,
-                    size: RomRomSizes.xl,
+                    size: MySizes.xl,
                   )
                 : null,
           ),
-          const SizedBox(width: RomRomSizes.medium),
+          const SizedBox(width: MySizes.medium),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,10 +119,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                       ),
                     ),
                     if (receiver?.isVerified == true) ...[
-                      const SizedBox(width: RomRomSizes.spaceBetweenItem),
+                      const SizedBox(width: MySizes.spaceBetweenItem),
                       Icon(
                         Icons.verified,
-                        size: RomRomSizes.iconSmall,
+                        size: MySizes.iconSmall,
                         color: theme.colorScheme.primary,
                       ),
                     ],
@@ -169,8 +169,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return ListView.builder(
       controller: controller.scrollController,
       padding: const EdgeInsets.symmetric(
-        horizontal: RomRomSizes.containerPadding,
-        vertical: RomRomSizes.medium,
+        horizontal: MySizes.containerPadding,
+        vertical: MySizes.medium,
       ),
       itemCount: messages.length,
       itemBuilder: (context, index) {

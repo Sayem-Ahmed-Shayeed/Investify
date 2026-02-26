@@ -23,7 +23,7 @@ class AuthCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.2,
@@ -42,19 +42,19 @@ class AuthCard extends StatelessWidget {
             ),
             child: Icon(
               Icons.login,
-              size: RomRomSizes.xxxxl,
+              size: MySizes.xxxxl,
               color: theme.iconTheme.color,
             ),
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Sign in with email", style: theme.textTheme.headlineMedium),
-          const SizedBox(height: RomRomSizes.spaceBetweenItem),
+          const SizedBox(height: MySizes.spaceBetweenItem),
           Text(
             "Make a new doc to bring your words, data,\nand teams together. For free",
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements * 2),
+          const SizedBox(height: MySizes.spaceBetweenElements * 2),
 
           InputField(
             hint: "Email",
@@ -62,7 +62,7 @@ class AuthCard extends StatelessWidget {
             onChanged: (v) => controller.email.value = v,
           ),
 
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           Obx(
             () => InputField(
@@ -95,7 +95,7 @@ class AuthCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.medium),
+          const SizedBox(height: MySizes.medium),
 
           SizedBox(
             width: double.infinity,
@@ -119,7 +119,7 @@ class AuthCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
           Text("Or sign in with", style: theme.textTheme.bodyMedium),
 
           const SizedBox(height: 12),
@@ -128,14 +128,14 @@ class AuthCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               SocialButton(icon: Icons.g_mobiledata),
-              SizedBox(width: RomRomSizes.spaceBetweenItem),
+              SizedBox(width: MySizes.spaceBetweenItem),
               SocialButton(icon: Icons.facebook),
-              SizedBox(width: RomRomSizes.spaceBetweenItem),
+              SizedBox(width: MySizes.spaceBetweenItem),
               SocialButton(icon: Icons.apple),
             ],
           ),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

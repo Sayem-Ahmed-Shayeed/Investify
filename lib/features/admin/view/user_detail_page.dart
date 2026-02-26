@@ -81,7 +81,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+                    padding: const EdgeInsets.all(MySizes.containerPadding),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -108,7 +108,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                                 )
                               : null,
                         ),
-                        const SizedBox(height: RomRomSizes.medium),
+                        const SizedBox(height: MySizes.medium),
 
                         // Name
                         Text(
@@ -117,20 +117,20 @@ class _UserDetailPageState extends State<UserDetailPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: RomRomSizes.small),
+                        const SizedBox(height: MySizes.small),
 
                         // Email
                         Text(
                           _userData?['email'] ?? 'No email',
                           style: theme.textTheme.bodyLarge,
                         ),
-                        const SizedBox(height: RomRomSizes.medium),
+                        const SizedBox(height: MySizes.medium),
 
                         // Details Card
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(
-                            RomRomSizes.containerPadding,
+                            MySizes.containerPadding,
                           ),
                           decoration: BoxDecoration(
                             color: isDark
@@ -154,7 +154,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: RomRomSizes.large),
+                        const SizedBox(height: MySizes.large),
 
                         // NID Card Section
                         Text(
@@ -163,7 +163,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: RomRomSizes.small),
+                        const SizedBox(height: MySizes.small),
                         if (_userData?['nidCardUrl'] != null &&
                             _userData!['nidCardUrl'].isNotEmpty)
                           GestureDetector(
@@ -208,7 +208,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               ),
                             ),
                           ),
-                        const SizedBox(height: RomRomSizes.small),
+                        const SizedBox(height: MySizes.small),
                         Text(
                           'Tap to view full size',
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -226,9 +226,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 if (!isAdmin)
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.all(
-                        RomRomSizes.containerPadding,
-                      ),
+                      padding: const EdgeInsets.all(MySizes.containerPadding),
                       child: Row(
                         children: [
                           Expanded(
@@ -244,7 +242,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               child: const Text('Approve'),
                             ),
                           ),
-                          const SizedBox(width: RomRomSizes.medium),
+                          const SizedBox(width: MySizes.medium),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: isVerified ? _rejectUser : null,

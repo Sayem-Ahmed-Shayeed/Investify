@@ -23,7 +23,7 @@ class ActionButtons extends StatelessWidget {
     final isLoading = isPublishing || isSavingDraft;
 
     return Container(
-      padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+      padding: const EdgeInsets.all(MySizes.containerPadding),
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: SafeArea(
         top: false,
@@ -33,7 +33,7 @@ class ActionButtons extends StatelessWidget {
             // Upload status indicator
             if (uploadStatus != null && uploadStatus!.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: RomRomSizes.small),
+                padding: const EdgeInsets.only(bottom: MySizes.small),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -64,26 +64,26 @@ class ActionButtons extends StatelessWidget {
                     onPressed: isLoading ? null : onPublish,
                     icon: isPublishing
                         ? const SizedBox(
-                            width: RomRomSizes.iconSmall,
-                            height: RomRomSizes.iconSmall,
+                            width: MySizes.iconSmall,
+                            height: MySizes.iconSmall,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.send, size: RomRomSizes.iconMedium),
+                        : const Icon(Icons.send, size: MySizes.iconMedium),
                     label: Text(
                       isPublishing ? 'Publishing...' : 'Publish Post',
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        vertical: RomRomSizes.large,
+                        vertical: MySizes.large,
                       ),
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: isDark ? Colors.black : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          RomRomSizes.roundedButtonCorner,
+                          MySizes.roundedButtonCorner,
                         ),
                       ),
                     ),

@@ -22,7 +22,7 @@ class ChatBubble extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CupertinoActivityIndicator(radius: 6, animating: true),
-            SizedBox(width: RomRomSizes.spaceBetweenItem),
+            SizedBox(width: MySizes.spaceBetweenItem),
             Text(
               'Sending...',
               style: theme.textTheme.labelSmall?.copyWith(
@@ -45,7 +45,7 @@ class ChatBubble extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: RomRomSizes.small),
+      padding: const EdgeInsets.only(bottom: MySizes.small),
       child: Row(
         mainAxisAlignment: message.isMe
             ? MainAxisAlignment.end
@@ -54,17 +54,17 @@ class ChatBubble extends StatelessWidget {
         children: [
           if (!message.isMe && showAvatar)
             CircleAvatar(
-              radius: RomRomSizes.large,
+              radius: MySizes.large,
               backgroundColor: theme.colorScheme.surfaceContainerHighest,
               child: Icon(
                 Icons.person,
-                size: RomRomSizes.iconSmall,
+                size: MySizes.iconSmall,
                 color: theme.colorScheme.onSurface,
               ),
             )
           else if (!message.isMe)
-            const SizedBox(width: RomRomSizes.xxxl),
-          if (!message.isMe) const SizedBox(width: RomRomSizes.small),
+            const SizedBox(width: MySizes.xxxl),
+          if (!message.isMe) const SizedBox(width: MySizes.small),
           Flexible(
             child: Column(
               crossAxisAlignment: message.isMe
@@ -75,7 +75,7 @@ class ChatBubble extends StatelessWidget {
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
-                  padding: const EdgeInsets.all(RomRomSizes.medium),
+                  padding: const EdgeInsets.all(MySizes.medium),
                   decoration: BoxDecoration(
                     color: message.isMe
                         ? theme.colorScheme.primary
@@ -83,21 +83,17 @@ class ChatBubble extends StatelessWidget {
                               ? theme.colorScheme.surfaceContainerHigh
                               : theme.colorScheme.surfaceContainerHighest),
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(
-                        RomRomSizes.roundedBoxCorner,
-                      ),
-                      topRight: const Radius.circular(
-                        RomRomSizes.roundedBoxCorner,
-                      ),
+                      topLeft: const Radius.circular(MySizes.roundedBoxCorner),
+                      topRight: const Radius.circular(MySizes.roundedBoxCorner),
                       bottomLeft: Radius.circular(
                         message.isMe
-                            ? RomRomSizes.roundedBoxCorner
-                            : RomRomSizes.spaceBetweenItem,
+                            ? MySizes.roundedBoxCorner
+                            : MySizes.spaceBetweenItem,
                       ),
                       bottomRight: Radius.circular(
                         message.isMe
-                            ? RomRomSizes.spaceBetweenItem
-                            : RomRomSizes.roundedBoxCorner,
+                            ? MySizes.spaceBetweenItem
+                            : MySizes.roundedBoxCorner,
                       ),
                     ),
                   ),
@@ -110,7 +106,7 @@ class ChatBubble extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: RomRomSizes.spaceBetweenItem),
+                const SizedBox(height: MySizes.spaceBetweenItem),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -123,7 +119,7 @@ class ChatBubble extends StatelessWidget {
                       ),
                     ),
                     if (message.isMe) ...[
-                      const SizedBox(width: RomRomSizes.spaceBetweenItem),
+                      const SizedBox(width: MySizes.spaceBetweenItem),
                       _buildStatusIndicator(message.status, theme),
                     ],
                   ],

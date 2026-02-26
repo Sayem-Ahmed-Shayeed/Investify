@@ -36,13 +36,13 @@ class PostCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(
-        horizontal: RomRomSizes.spaceBetweenElements,
+        horizontal: MySizes.spaceBetweenElements,
         vertical: 8,
       ),
-      padding: const EdgeInsets.all(RomRomSizes.spaceBetweenElements),
+      padding: const EdgeInsets.all(MySizes.spaceBetweenElements),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(RomRomSizes.spaceBetweenElements),
+        borderRadius: BorderRadius.circular(MySizes.spaceBetweenElements),
         border: Border.all(
           color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
           width: 0.5,
@@ -65,16 +65,16 @@ class PostCard extends StatelessWidget {
             onEdit: onEdit,
             onDelete: onDelete,
           ),
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           if (post.media.isNotEmpty)
             PostCardMedia(post: post, controller: controller),
           if (post.media.isNotEmpty)
-            const SizedBox(height: RomRomSizes.spaceBetweenElements),
+            const SizedBox(height: MySizes.spaceBetweenElements),
 
           PostCardDescription(post: post),
 
-          const SizedBox(height: RomRomSizes.spaceBetweenElements),
+          const SizedBox(height: MySizes.spaceBetweenElements),
 
           PostCardActions(
             post: post,

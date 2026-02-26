@@ -326,8 +326,8 @@ class PostIdeaController extends GetxController {
       backgroundColor: isError ? Colors.red.shade100 : Colors.green.shade100,
       colorText: isError ? Colors.red.shade900 : Colors.green.shade900,
       duration: const Duration(seconds: 1),
-      margin: const EdgeInsets.all(RomRomSizes.medium),
-      borderRadius: RomRomSizes.roundedBoxCorner,
+      margin: const EdgeInsets.all(MySizes.medium),
+      borderRadius: MySizes.roundedBoxCorner,
     );
   }
 }

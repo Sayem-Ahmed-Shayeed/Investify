@@ -50,10 +50,10 @@ class NotificationService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('✅ Notification sent: ${response.body}');
+        debugPrint('Notification sent: ${response.body}');
       } else {
         debugPrint(
-          '❌ Notification failed: ${response.statusCode} ${response.body}',
+          'Notification failed: ${response.statusCode} ${response.body}',
         );
       }
     } catch (e) {

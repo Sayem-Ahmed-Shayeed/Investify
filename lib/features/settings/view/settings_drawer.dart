@@ -24,11 +24,11 @@ class SettingsDrawer extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(context, theme),
-            const SizedBox(height: RomRomSizes.medium),
+            const SizedBox(height: MySizes.medium),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: RomRomSizes.containerPadding,
+                  horizontal: MySizes.containerPadding,
                 ),
                 children: [
                   buildSectionTitle(theme, 'Preferences'),
@@ -53,11 +53,11 @@ class SettingsDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: RomRomSizes.xl),
+                  const SizedBox(height: MySizes.xl),
 
-                  const SizedBox(height: RomRomSizes.xl),
+                  const SizedBox(height: MySizes.xl),
                   SettingsGroup(children: [LogOutItem()]),
-                  const SizedBox(height: RomRomSizes.medium),
+                  const SizedBox(height: MySizes.medium),
                   SettingsGroup(
                     children: [
                       BuildSettingsItem(
@@ -83,7 +83,7 @@ class SettingsDrawer extends StatelessWidget {
     final authController = Get.find<AuthController>();
     String currUserEmail = authController.getCurrentUserEmail;
     return Container(
-      padding: const EdgeInsets.all(RomRomSizes.xl),
+      padding: const EdgeInsets.all(MySizes.xl),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -102,7 +102,7 @@ class SettingsDrawer extends StatelessWidget {
               return Stack(
                 children: [
                   CircleAvatar(
-                    radius: RomRomSizes.xxxl,
+                    radius: MySizes.xxxl,
                     backgroundColor: theme.colorScheme.primary.withValues(
                       alpha: 0.2,
                     ),
@@ -112,7 +112,7 @@ class SettingsDrawer extends StatelessWidget {
                     child: imageUrl == null
                         ? Icon(
                             Icons.person,
-                            size: RomRomSizes.xxxl,
+                            size: MySizes.xxxl,
                             color: theme.colorScheme.primary,
                           )
                         : null,
@@ -156,7 +156,7 @@ class SettingsDrawer extends StatelessWidget {
               );
             }),
           ),
-          const SizedBox(width: RomRomSizes.containerPadding),
+          const SizedBox(width: MySizes.containerPadding),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +169,7 @@ class SettingsDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: RomRomSizes.spaceBetweenItem),
+                const SizedBox(height: MySizes.spaceBetweenItem),
                 Text(
                   currUserEmail,
                   style: theme.textTheme.bodySmall?.copyWith(

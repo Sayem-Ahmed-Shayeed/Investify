@@ -5,7 +5,7 @@ flutter_native_splash:
   # dart run flutter_native_splash:create
 
   # The color option sets the background color of the splash screen.
-  color: "#87CEEB"
+  color: "#000000"
 
   # The image option allows you to specify an image used in the splash screen.
   # If not specified, only the background color will be shown.
@@ -13,7 +13,7 @@ flutter_native_splash:
 
   # The color_dark, background_image_dark, image_dark, branding_dark are used when the
   # device is in dark mode. If they are not specified, the light mode colors will be used.
-  color_dark: "#1A237E"
+  color_dark: "#000000"
   # image_dark: assets/images/splash_logo_dark.png
 
   # The android, ios and web options allow you to disable splash screen for specific platforms.
@@ -24,7 +24,7 @@ flutter_native_splash:
   # Android 12+ specific options
   android_12:
     color: "#87CEEB"
-    color_dark: "#1A237E"
+    color_dark: "#000000"
     # image: assets/images/splash_logo.png
     # image_dark: assets/images/splash_logo_dark.png
 

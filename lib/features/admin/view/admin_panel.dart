@@ -79,7 +79,7 @@ class _AdminPanelState extends State<AdminPanel> {
     return RefreshIndicator(
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+        padding: const EdgeInsets.all(MySizes.containerPadding),
         itemCount: _users.length,
         itemBuilder: (context, index) {
           final user = _users[index];
@@ -87,7 +87,7 @@ class _AdminPanelState extends State<AdminPanel> {
           final isAdmin = user['isAdmin'] ?? false;
 
           return Card(
-            margin: const EdgeInsets.only(bottom: RomRomSizes.medium),
+            margin: const EdgeInsets.only(bottom: MySizes.medium),
             child: ListTile(
               onTap: () => Get.to(() => UserDetailPage(uid: user['uid'])),
               title: Text(user['name'] ?? 'Unknown'),

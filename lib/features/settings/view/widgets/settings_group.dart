@@ -13,7 +13,7 @@ class SettingsGroup extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(RomRomSizes.roundedBoxCorner),
+        borderRadius: BorderRadius.circular(MySizes.roundedBoxCorner),
       ),
       child: Column(children: children),
     );
@@ -24,6 +24,6 @@ Widget buildArrow(ThemeData theme) {
   return Icon(
     Icons.chevron_right,
     color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-    size: RomRomSizes.xl,
+    size: MySizes.xl,
   );
 }

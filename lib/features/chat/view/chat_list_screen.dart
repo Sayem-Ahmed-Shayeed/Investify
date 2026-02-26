@@ -21,7 +21,7 @@ class ChatListScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(RomRomSizes.containerPadding),
+            padding: const EdgeInsets.all(MySizes.containerPadding),
             child: Text(
               'Messages',
               style: theme.textTheme.headlineMedium?.copyWith(
@@ -37,7 +37,7 @@ class ChatListScreen extends StatelessWidget {
               }
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: RomRomSizes.containerPadding,
+                  horizontal: MySizes.containerPadding,
                 ),
                 itemCount: conversations.length,
                 itemBuilder: (context, index) {
@@ -65,14 +65,14 @@ class ChatListScreen extends StatelessWidget {
             size: 64,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
-          const SizedBox(height: RomRomSizes.containerPadding),
+          const SizedBox(height: MySizes.containerPadding),
           Text(
             'No conversations yet',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
-          const SizedBox(height: RomRomSizes.small),
+          const SizedBox(height: MySizes.small),
           Text(
             'Start connecting with investors',
             style: theme.textTheme.bodySmall?.copyWith(
@@ -104,7 +104,7 @@ class ChatListScreen extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: RomRomSizes.medium),
+        padding: const EdgeInsets.symmetric(vertical: MySizes.medium),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -117,7 +117,7 @@ class ChatListScreen extends StatelessWidget {
             Stack(
               children: [
                 CircleAvatar(
-                  radius: RomRomSizes.xxl,
+                  radius: MySizes.xxl,
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   backgroundImage: user.avatarUrl != null
                       ? NetworkImage(user.avatarUrl!)
@@ -126,7 +126,7 @@ class ChatListScreen extends StatelessWidget {
                       ? Icon(
                           Icons.person,
                           color: theme.colorScheme.onSurface,
-                          size: RomRomSizes.xl,
+                          size: MySizes.xl,
                         )
                       : null,
                 ),
@@ -153,7 +153,7 @@ class ChatListScreen extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(width: RomRomSizes.medium),
+            const SizedBox(width: MySizes.medium),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,12 +170,10 @@ class ChatListScreen extends StatelessWidget {
                               ),
                             ),
                             if (user.isVerified) ...[
-                              const SizedBox(
-                                width: RomRomSizes.spaceBetweenItem,
-                              ),
+                              const SizedBox(width: MySizes.spaceBetweenItem),
                               Icon(
                                 Icons.verified,
-                                size: RomRomSizes.iconSmall,
+                                size: MySizes.iconSmall,
                                 color: theme.colorScheme.primary,
                               ),
                             ],
@@ -192,7 +190,7 @@ class ChatListScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: RomRomSizes.spaceBetweenItem),
+                  const SizedBox(height: MySizes.spaceBetweenItem),
                   Text(
                     conversation.lastMessage,
                     maxLines: 1,
