@@ -130,8 +130,24 @@ class PostCardMedia extends StatelessWidget {
 
   void _openPdf(String url) async {
     final uri = Uri.parse(url);
+    print(url);
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      try {
+        await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+      } catch (e) {
+        debugPrint("Falling back to browser: $e");
+        try {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } catch (e2) {
+          debugPrint("Browser fallback also failed: $e2");
+        }
+      }
+    } else {
+      try {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        debugPrint("Could not open PDF: $e");
+      }
     }
   }
 
