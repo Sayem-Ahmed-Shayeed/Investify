@@ -27,6 +27,10 @@ class PostIdeaController extends GetxController {
   final galleryImageBytes = <Uint8List>[].obs;
   final galleryImageNames = <String>[].obs;
 
+  // PDF attachment
+  final pdfBytes = Rxn<Uint8List>();
+  final pdfFileName = Rxn<String>();
+
   // UI state
   final isPublishing = false.obs;
   final isSavingDraft = false.obs;
@@ -174,6 +178,37 @@ class PostIdeaController extends GetxController {
     }
   }
 
+  /// Pick a PDF file
+  Future<void> pickPdf() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+        withData: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.single;
+        if (file.bytes != null) {
+          pdfBytes.value = file.bytes;
+          pdfFileName.value = file.name;
+          debugPrint(
+            '✅ PDF selected: ${file.name} (${file.bytes!.length} bytes)',
+          );
+        }
+      }
+    } catch (e) {
+      _showMessage('Error', 'Error picking PDF: $e', isError: true);
+    }
+  }
+
+  /// Remove selected PDF
+  void removePdf() {
+    pdfBytes.value = null;
+    pdfFileName.value = null;
+  }
+
   // Legacy getter for UI compatibility
   List<String> get galleryImages => galleryImageNames;
 
@@ -304,6 +339,23 @@ class PostIdeaController extends GetxController {
       }
     }
 
+    // Upload PDF if exists
+    if (pdfBytes.value != null && pdfFileName.value != null) {
+      uploadStatus.value = 'Uploading PDF...';
+      try {
+        final uploadFile = UploadFile(
+          name: pdfFileName.value!,
+          bytes: pdfBytes.value!,
+        );
+        final uploadedPdf = await _mediaUploadService.uploadPdf(uploadFile);
+        uploadedMedia.add(uploadedPdf);
+        debugPrint('✅ PDF uploaded: ${uploadedPdf.url}');
+      } catch (e) {
+        debugPrint('❌ PDF upload failed: $e');
+        rethrow;
+      }
+    }
+
     return uploadedMedia;
   }
 
@@ -315,6 +367,8 @@ class PostIdeaController extends GetxController {
     videoPitchPath.value = null;
     galleryImageBytes.clear();
     galleryImageNames.clear();
+    pdfBytes.value = null;
+    pdfFileName.value = null;
   }
 
   /// Show snackbar message

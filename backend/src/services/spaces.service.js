@@ -13,7 +13,7 @@ class SpacesService {
       },
       forcePathStyle: false
     });
-    
+
     this.bucket = process.env.DO_SPACES_BUCKET;
     this.cdnEndpoint = process.env.DO_SPACES_ENDPOINT.replace('https://', `https://${this.bucket}.`);
   }
@@ -21,9 +21,13 @@ class SpacesService {
   async generateUploadUrl(fileType, mimeType, userId) {
     const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const allowedVideoTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/webm', 'video/quicktime'];
-    
-    const allowedTypes = fileType === 'image' ? allowedImageTypes : allowedVideoTypes;
-    
+    const allowedPdfTypes = ['application/pdf'];
+
+    let allowedTypes;
+    if (fileType === 'image') allowedTypes = allowedImageTypes;
+    else if (fileType === 'pdf') allowedTypes = allowedPdfTypes;
+    else allowedTypes = allowedVideoTypes;
+
     if (!allowedTypes.includes(mimeType)) {
       throw new Error(`Invalid mime type: ${mimeType}. Allowed: ${allowedTypes.join(', ')}`);
     }
