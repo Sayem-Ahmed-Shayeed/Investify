@@ -39,6 +39,7 @@ class SettingsDrawer extends StatelessWidget {
                       BuildSettingsItem(
                         icon: Icons.notifications_outlined,
                         title: 'Notifications',
+                        subtitle: "Allowed",
                         trailing: buildArrow(theme),
                         onTap: () {},
                       ),
@@ -53,33 +54,21 @@ class SettingsDrawer extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: RomRomSizes.xl),
-                  buildSectionTitle(theme, 'Account'),
+
+                  const SizedBox(height: RomRomSizes.xl),
+                  SettingsGroup(children: [LogOutItem()]),
+                  const SizedBox(height: RomRomSizes.medium),
                   SettingsGroup(
                     children: [
                       BuildSettingsItem(
-                        icon: Icons.person_outline,
-                        title: 'Edit Profile',
-                        trailing: buildArrow(theme),
-                        onTap: () {},
-                      ),
-                      BuildDivider(),
-                      BuildSettingsItem(
-                        icon: Icons.lock_outline,
-                        title: 'Privacy & Security',
-                        trailing: buildArrow(theme),
-                        onTap: () {},
-                      ),
-                      BuildDivider(),
-                      BuildSettingsItem(
-                        icon: Icons.help_outline,
-                        title: 'Help & Support',
-                        trailing: buildArrow(theme),
-                        onTap: () {},
+                        icon: Icons.delete_outline,
+                        title: 'Delete Account',
+                        textColor: theme.colorScheme.error,
+                        iconColor: theme.colorScheme.error,
+                        onTap: () => _showDeleteAccountDialog(context),
                       ),
                     ],
                   ),
-                  const SizedBox(height: RomRomSizes.xl),
-                  SettingsGroup(children: [LogOutItem()]),
                   buildAppVersion(theme),
                 ],
               ),
@@ -263,6 +252,37 @@ class SettingsDrawer extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final authController = Get.find<AuthController>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text(
+          'Are you sure you want to delete your account? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              authController.deleteAccount();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }

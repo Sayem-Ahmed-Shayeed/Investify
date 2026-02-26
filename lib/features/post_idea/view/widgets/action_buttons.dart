@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:investify/utils/sizes/size.dart';
 
-/// Bottom action bar with Save Draft and Publish Post buttons
 class ActionButtons extends StatelessWidget {
-  final VoidCallback onSaveDraft;
   final VoidCallback onPublish;
   final bool isPublishing;
   final bool isSavingDraft;
@@ -11,7 +10,6 @@ class ActionButtons extends StatelessWidget {
 
   const ActionButtons({
     super.key,
-    required this.onSaveDraft,
     required this.onPublish,
     this.isPublishing = false,
     this.isSavingDraft = false,
@@ -21,7 +19,7 @@ class ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
     final isLoading = isPublishing || isSavingDraft;
 
     return Container(
@@ -60,41 +58,6 @@ class ActionButtons extends StatelessWidget {
             // Buttons row
             Row(
               children: [
-                // Save Draft Button
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: isLoading ? null : onSaveDraft,
-                    icon: isSavingDraft
-                        ? SizedBox(
-                            width: RomRomSizes.iconSmall,
-                            height: RomRomSizes.iconSmall,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.save_outlined,
-                            size: RomRomSizes.iconMedium,
-                          ),
-                    label: Text(isSavingDraft ? 'Saving...' : 'Save Draft'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: RomRomSizes.large,
-                      ),
-                      side: BorderSide(
-                        color: theme.colorScheme.outline.withValues(alpha: 0.5),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          RomRomSizes.roundedButtonCorner,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: RomRomSizes.roundedBoxCorner),
-                // Publish Post Button
                 Expanded(
                   flex: 2,
                   child: ElevatedButton.icon(

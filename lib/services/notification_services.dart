@@ -17,17 +17,15 @@ class NotificationService {
     required String senderUid,
   }) async {
     if (kIsWeb) {
-      debugPrint('⚠️ Push notifications skipped on web platform');
       return;
     }
 
     try {
-      debugPrint('📤 Sending notification to: $receiverUid');
+      debugPrint('Sending notification to: $receiverUid');
 
       final body = jsonEncode({
         "app_id": _appId,
         "include_external_user_ids": [receiverUid],
-        // Fixed: use external_user_ids
         "target_channel": "push",
         "headings": {"en": senderName},
         "contents": {

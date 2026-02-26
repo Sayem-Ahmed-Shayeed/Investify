@@ -15,7 +15,7 @@ class RegisterScreen extends StatelessWidget {
     final controller = Get.find<AuthController>();
     final themeController = Get.find<ThemeController>();
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -42,9 +42,6 @@ class RegisterScreen extends StatelessWidget {
                     : AppColors.textPrimaryLight,
               ),
               onPressed: themeController.toggleTheme,
-              tooltip: themeController.isDarkMode
-                  ? 'Switch to Light Mode'
-                  : 'Switch to Dark Mode',
             ),
           ),
         ],

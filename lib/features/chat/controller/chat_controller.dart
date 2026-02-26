@@ -136,14 +136,14 @@ class ChatController extends GetxController {
         );
   }
 
-  // ─── Room ────────────────────────────────────────────────────────────────────
+  // Create room
 
   Future<void> createRoom({
     required String sender,
     required String receiver,
   }) async {
     if (sender == receiver) {
-      debugPrint('⚠️ Cannot create chat room with yourself');
+      debugPrint('Cannot create chat room with yourself');
       return;
     }
     final roomId = buildRoomId(sender, receiver);
@@ -161,17 +161,14 @@ class ChatController extends GetxController {
         'receiverUid': receiver,
         'senderName': senderName,
         'receiverName': receiverName,
-        'lastMessage': '',
         'lastMessageTime': FieldValue.serverTimestamp(),
       });
-
-      debugPrint('✅ Chat room created: $roomId');
     } catch (e) {
       debugPrint('createRoom error: $e');
     }
   }
 
-  // ─── Messages ────────────────────────────────────────────────────────────────
+  //Messages
 
   void setCurrentRoom({required String receiverUid}) {
     _currentRoomReceiverUid = receiverUid;
@@ -260,8 +257,7 @@ class ChatController extends GetxController {
 
       _sendingMessageId = msgRef.id;
 
-      // Add optimistic message with "sending" status
-      final optimisticMessage = ChatMessage(
+      final tempMsges = ChatMessage(
         id: msgRef.id,
         senderId: _currentUid,
         content: text,
@@ -271,13 +267,13 @@ class ChatController extends GetxController {
         status: MessageStatus.sending,
       );
 
-      currentMessages.value = [...currentMessages, optimisticMessage];
+      currentMessages.value = [...currentMessages, tempMsges];
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         scrollToBottom();
       });
 
-      // Write to Firestore (no isRead field)
+      // Store to firestore
       await msgRef.set({
         'senderId': _currentUid,
         'content': text,
@@ -289,10 +285,9 @@ class ChatController extends GetxController {
         'lastMessageTime': FieldValue.serverTimestamp(),
       });
 
-      // Clear the sending ID - the listener will update the message to "sent"
       _sendingMessageId = '';
 
-      debugPrint('✅ Message sent successfully');
+      debugPrint('Message sent successfully');
 
       // Send push notification
       if (_currentRoomReceiverUid.isNotEmpty) {
@@ -307,9 +302,9 @@ class ChatController extends GetxController {
         );
       }
     } catch (e) {
-      debugPrint('❌ sendMessage error: $e');
+      debugPrint('sendMessage error: $e');
       _sendingMessageId = '';
-      // Remove the failed message
+      // if any msg is failed remove it
       currentMessages.value = currentMessages
           .where((m) => m.id != _sendingMessageId)
           .toList();

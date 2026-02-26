@@ -16,7 +16,6 @@ class UserModel {
     this.createdAt,
   });
 
-  /// Convert to JSON map
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
@@ -28,7 +27,6 @@ class UserModel {
     };
   }
 
-  /// Create from JSON map
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       uid: json['uid'] as String?,
@@ -42,7 +40,6 @@ class UserModel {
     );
   }
 
-  /// Create a copy with updated fields
   UserModel copyWith({
     String? uid,
     String? name,

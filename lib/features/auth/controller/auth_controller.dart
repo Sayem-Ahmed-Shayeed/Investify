@@ -8,13 +8,14 @@ import 'package:get/get.dart';
 import 'package:investify/features/auth/view/auth_gate.dart';
 import 'package:investify/features/auth/view/verify_email.dart';
 import 'package:investify/features/post_idea/services/media_upload_service.dart';
+import 'package:investify/services/firestore_service.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
+import '../../home/view/main_screen.dart';
 import '../../profile/controller/profile_controller.dart';
 import '../model/user_model.dart';
 import '../services/user_service.dart';
 
-/// Controller for handling authentication logic
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -26,7 +27,7 @@ class AuthController extends GetxController {
   final name = ''.obs;
   final age = 0.obs;
   final confirmPassword = ''.obs;
-  final nidCardImagePath = Rxn<String>();
+  final nidCardImagePath = Rxn<String>(); //Reactive obserable variable
   final nidCardFileName = Rxn<String>();
   Uint8List? nidCardBytes;
 
@@ -38,6 +39,7 @@ class AuthController extends GetxController {
   // Email verification
   final isEmailVerified = false.obs;
   Timer? _verificationTimer;
+  StreamSubscription? _verificationStreamSubscription;
 
   // Password reset
   final resetEmailSent = false.obs;
@@ -47,19 +49,31 @@ class AuthController extends GetxController {
   final cachedProfileImageUrl = Rxn<String>();
   final isUploadingProfileImage = false.obs;
 
+  // Verification status
+  final isVerified = false.obs;
+  final isAdmin = false.obs;
+
   @override
   void onClose() {
     _verificationTimer?.cancel();
+    _verificationStreamSubscription?.cancel();
     super.onClose();
   }
 
-  /// Set up OneSignal with the current user's UID
+  Future<void> _listenToVerificationStatus(String uid) async {
+    _verificationStreamSubscription?.cancel();
+    _verificationStreamSubscription = 
+      FirestoreService().streamUserVerificationStatus(uid).listen((status) {
+        isVerified.value = status['isVerified'] ?? false;
+        isAdmin.value = status['isAdmin'] ?? false;
+      });
+  }
+
   Future<void> _setupOneSignal(String uid) async {
     try {
       await OneSignal.login(uid);
-      debugPrint('🔗 OneSignal login successful for UID: $uid');
     } catch (e) {
-      debugPrint('❌ Error setting up OneSignal: $e');
+      debugPrint('Error setting up OneSignal: $e');
     }
   }
 
@@ -69,16 +83,27 @@ class AuthController extends GetxController {
     if (_auth.currentUser != null) {
       cachedUserName.value = _auth.currentUser?.displayName ?? 'User';
       fetchUserProfile();
-
-      // ✅ Set up OneSignal for returning users
       _setupOneSignal(_auth.currentUser!.uid);
+      _fetchVerificationStatus();
     }
   }
 
-  /// Fetch user profile from MongoDB and cache it
+  Future<void> _fetchVerificationStatus() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      final status = await FirestoreService().getVerificationStatus(uid);
+      isVerified.value = status['isVerified'] ?? false;
+      isAdmin.value = status['isAdmin'] ?? false;
+      await _listenToVerificationStatus(uid);
+    }
+  }
+
+  //user name age
   Future<void> fetchUserProfile() async {
     try {
+      //Current user er information like name age nidcardimgpth
       final userData = await UserService().getCurrentUser();
+
       if (userData != null) {
         if (userData['name'] != null) {
           cachedUserName.value = userData['name'];
@@ -92,7 +117,7 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Pick and upload profile image
+  // Pick and upload profile image
   Future<void> pickAndUploadProfileImage() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -101,55 +126,43 @@ class AuthController extends GetxController {
         withData: true,
       );
 
-      if (result == null ||
-          result.files.isEmpty ||
-          result.files.single.bytes == null) {
+      if (result == null) {
         return;
       }
 
       isUploadingProfileImage.value = true;
 
       final file = result.files.single;
-      debugPrint('📤 Uploading profile image...');
 
-      // Upload to DigitalOcean Spaces
       final uploadedImage = await MediaUploadService().uploadImage(
         UploadFile(name: file.name, bytes: file.bytes!),
       );
 
-      debugPrint('✅ Profile image uploaded: ${uploadedImage.url}');
+      debugPrint('Profile image uploaded: ${uploadedImage.url}');
 
-      // Update user profile in MongoDB
       await UserService().updateUser(profileImageUrl: uploadedImage.url);
 
-      // Update cached value
       cachedProfileImageUrl.value = uploadedImage.url;
 
-      debugPrint('✅ Profile image URL saved to MongoDB');
+      debugPrint(' Profile image URL saved to MongoDB');
       _showMessage('Success', 'Profile photo updated!');
     } catch (e) {
-      debugPrint('❌ Failed to upload profile image: $e');
       _showMessage('Error', 'Failed to upload profile photo', isError: true);
     } finally {
       isUploadingProfileImage.value = false;
     }
   }
 
-  /// Remove profile image
   Future<void> removeProfileImage() async {
     try {
       isUploadingProfileImage.value = true;
 
-      // Update user profile in MongoDB with empty string
       await UserService().updateUser(profileImageUrl: '');
 
-      // Clear cached value
       cachedProfileImageUrl.value = null;
 
-      debugPrint('✅ Profile image removed');
       _showMessage('Success', 'Profile photo removed!');
     } catch (e) {
-      debugPrint('❌ Failed to remove profile image: $e');
       _showMessage('Error', 'Failed to remove profile photo', isError: true);
     } finally {
       isUploadingProfileImage.value = false;
@@ -158,7 +171,6 @@ class AuthController extends GetxController {
 
   String get getCurrentUserEmail => _auth.currentUser?.email ?? '';
 
-  /// Show snackbar message
   void _showMessage(String title, String message, {bool isError = false}) {
     Get.snackbar(
       title,
@@ -182,13 +194,13 @@ class AuthController extends GetxController {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
   }
 
-  /// Pick NID card image using file picker
+  // Pick NID card image using file picker
   Future<void> pickNidCardImage() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
         allowMultiple: false,
-        withData: true, // Required to get bytes on mobile
+        withData: true,
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -201,14 +213,13 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Clear picked NID card image
   void clearNidCardImage() {
     nidCardImagePath.value = null;
     nidCardFileName.value = null;
     nidCardBytes = null;
   }
 
-  /// Validate registration form
+  /// Validation
   String? _validateRegistration() {
     if (name.value.trim().isEmpty) {
       return 'Please enter your name';
@@ -219,7 +230,7 @@ class AuthController extends GetxController {
     if (!GetUtils.isEmail(email.value.trim())) {
       return 'Please enter a valid email';
     }
-    if (age.value <= 0 || age.value > 120) {
+    if (age.value <= 0 || age.value > 60) {
       return 'Please enter a valid age';
     }
     if (password.value.length < 6) {
@@ -234,8 +245,9 @@ class AuthController extends GetxController {
     return null;
   }
 
-  /// Login with email and password
+  /// Login
   Future<void> login() async {
+    //email and pass validation
     if (email.value.trim().isEmpty || password.value.isEmpty) {
       _showMessage('Error', 'Please enter email and password', isError: true);
       return;
@@ -248,10 +260,22 @@ class AuthController extends GetxController {
         password: password.value,
       );
 
-      // ✅ Set up OneSignal for this user
+      // Set up OneSignal for this user
       final uid = userCredential.user?.uid;
       if (uid != null) {
         await _setupOneSignal(uid);
+
+        // Check if admin and fetch verification status
+        final userEmail = email.value.trim().toLowerCase();
+        if (userEmail == 'pshayeed1@gmail.com') {
+          await FirestoreService().checkAndSetAdmin(userEmail, uid);
+        }
+        final status = await FirestoreService().getVerificationStatus(uid);
+        isVerified.value = status['isVerified'] ?? false;
+        isAdmin.value = status['isAdmin'] ?? false;
+        
+        // Listen for real-time updates
+        await _listenToVerificationStatus(uid);
       }
 
       _showMessage('Success', 'Login successful!');
@@ -279,7 +303,6 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Handle Firebase auth errors with user-friendly messages
   void _handleAuthError(FirebaseAuthException e) {
     String message;
     switch (e.code) {
@@ -325,19 +348,36 @@ class AuthController extends GetxController {
     try {
       debugPrint('Starting registration...');
 
-      // Create user with Firebase Auth
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.value.trim(),
         password: password.value,
       );
 
-      // ✅ Set up OneSignal for this new user
       final uid = userCredential.user?.uid;
       if (uid != null) {
         await _setupOneSignal(uid);
+
+        // Upload NID card FIRST
+        String? nidCardUrl;
+        if (nidCardBytes != null && nidCardFileName.value != null) {
+          final uploadedNid = await MediaUploadService().uploadImage(
+            UploadFile(name: nidCardFileName.value!, bytes: nidCardBytes!),
+          );
+          nidCardUrl = uploadedNid.url;
+          debugPrint('NID card uploaded: $nidCardUrl');
+        }
+
+        // Then initialize Firestore with nidCardUrl
+        await FirestoreService().initializeUserVerification(
+          uid,
+          name: name.value.trim(),
+          email: email.value.trim(),
+          age: age.value,
+          nidCardUrl: nidCardUrl,
+        );
       }
 
-      debugPrint('User created: ${userCredential.user?.uid}');
+      debugPrint('User created');
 
       // Create user model
       final user = UserModel(
@@ -349,18 +389,16 @@ class AuthController extends GetxController {
         createdAt: DateTime.now(),
       );
 
-      // Upload NID card to Spaces and save user data to MongoDB
       try {
         String? nidCardUrl;
 
-        // Upload NID card image if available
         if (nidCardBytes != null && nidCardFileName.value != null) {
-          debugPrint('📤 Uploading NID card...');
+          debugPrint(' Uploading NID card...');
           final uploadedNid = await MediaUploadService().uploadImage(
             UploadFile(name: nidCardFileName.value!, bytes: nidCardBytes!),
           );
           nidCardUrl = uploadedNid.url;
-          debugPrint('✅ NID card uploaded: $nidCardUrl');
+          debugPrint('NID card uploaded: $nidCardUrl');
         }
 
         await UserService().createUser(
@@ -371,9 +409,9 @@ class AuthController extends GetxController {
         );
 
         await sendEmailVerification();
-        debugPrint('✅ User saved to MongoDB');
+        debugPrint('User saved to MongoDB');
       } catch (e) {
-        debugPrint('⚠️ Failed to save user to MongoDB: $e');
+        debugPrint('Failed to save user to MongoDB: $e');
       }
 
       debugPrint('User registered: ${user.toJson()}');
@@ -398,7 +436,7 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Send email verification
+  // Send verify email
   Future<void> sendEmailVerification() async {
     try {
       final user = _auth.currentUser;
@@ -411,12 +449,11 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Check if email is verified
+  // check email verification
   Future<bool> checkEmailVerified() async {
     try {
       await _auth.currentUser?.reload();
       final verified = _auth.currentUser?.emailVerified ?? false;
-      debugPrint('Email verification check: $verified');
       isEmailVerified.value = verified;
       return verified;
     } catch (e) {
@@ -425,22 +462,26 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Start periodic check for email verification
-  void startEmailVerificationCheck(VoidCallback onVerified) {
-    debugPrint('Starting email verification check...');
+  Future<void> startEmailVerificationCheck() async {
     _verificationTimer?.cancel();
     _verificationTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
       final verified = await checkEmailVerified();
-      debugPrint('Verification timer tick - verified: $verified');
       if (verified) {
-        debugPrint('Email verified! Calling onVerified callback...');
         _verificationTimer?.cancel();
-        onVerified();
+        Get.snackbar(
+          'Success',
+          'Email verified successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.green.shade100,
+          colorText: Colors.green.shade900,
+        );
+        Get.offAll(() => const MainScreen());
       }
     });
   }
 
-  /// Stop email verification check
+  // Stop email verification check
   void stopEmailVerificationCheck() {
     _verificationTimer?.cancel();
   }
@@ -454,7 +495,7 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Send password reset email
+  // Send password reset email
   Future<void> sendPasswordResetEmail() async {
     if (email.value.trim().isEmpty) {
       _showMessage('Error', 'Please enter your email', isError: true);
@@ -487,17 +528,17 @@ class AuthController extends GetxController {
   /// Logout
   Future<void> logout() async {
     try {
-      // ✅ Logout from OneSignal
+      await _verificationStreamSubscription?.cancel();
       await OneSignal.logout();
 
       await _auth.signOut();
       clearFields();
 
-      // Clear cached profile data
       cachedUserName.value = '';
       cachedProfileImageUrl.value = null;
+      isVerified.value = false;
+      isAdmin.value = false;
 
-      // Clear profile posts
       if (Get.isRegistered<ProfileController>()) {
         Get.find<ProfileController>().posts.clear();
       }
@@ -510,7 +551,37 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Clear all form fields
+  /// Delete own account
+  Future<void> deleteAccount() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      _showMessage('Error', 'No user logged in', isError: true);
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      await FirestoreService().deleteUserAccount(uid);
+      await OneSignal.logout();
+
+      cachedUserName.value = '';
+      cachedProfileImageUrl.value = null;
+      isVerified.value = false;
+      isAdmin.value = false;
+
+      _showMessage('Success', 'Account deleted successfully');
+      Get.offAll(() => const AuthGate());
+    } catch (e) {
+      _showMessage(
+        'Error',
+        'Failed to delete account: ${e.toString()}',
+        isError: true,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void clearFields() {
     email.value = '';
     password.value = '';

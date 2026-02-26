@@ -5,10 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
-import 'package:investify/features/home/view/main_screen.dart';
 import 'package:investify/features/settings/controller/theme_controller.dart';
 import 'package:investify/utils/sizes/size.dart';
 import 'package:investify/utils/theme/app_colors.dart';
+
+import '../../home/view/main_screen.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
@@ -26,30 +27,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   void initState() {
     super.initState();
-    // Start verification check after frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVerificationCheck();
     });
   }
 
   void _startVerificationCheck() {
-    debugPrint('VerifyEmailScreen: Starting verification timer...');
     _verificationTimer?.cancel();
     _verificationTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
-      debugPrint('VerifyEmailScreen: Timer tick...');
-      await _checkVerification();
-    });
-  }
-
-  Future<void> _checkVerification() async {
-    try {
-      await FirebaseAuth.instance.currentUser?.reload();
-      final user = FirebaseAuth.instance.currentUser;
-      final verified = user?.emailVerified ?? false;
-      debugPrint('VerifyEmailScreen: Email verified = $verified');
-
+      final verified = await controller.checkEmailVerified();
       if (verified) {
-        debugPrint('VerifyEmailScreen: Email verified! Navigating to home...');
         _verificationTimer?.cancel();
         Get.snackbar(
           'Success',
@@ -61,9 +48,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         );
         Get.offAll(() => const MainScreen());
       }
-    } catch (e) {
-      debugPrint('VerifyEmailScreen: Error checking verification: $e');
-    }
+    });
   }
 
   @override
@@ -81,7 +66,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       _resendCooldown = 60;
     });
 
-    // Countdown timer
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {

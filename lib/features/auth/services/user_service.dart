@@ -9,7 +9,9 @@ import '../../../utils/constants/api_config.dart';
 class UserService {
   static final UserService _instance = UserService._internal();
 
-  factory UserService() => _instance;
+  factory UserService() {
+    return _instance;
+  }
 
   UserService._internal();
 
@@ -21,6 +23,7 @@ class UserService {
 
   Future<Map<String, String>> _getAuthHeaders() async {
     final token = await _getIdToken();
+
     if (token == null) {
       throw Exception('User not authenticated');
     }
@@ -45,7 +48,7 @@ class UserService {
       if (nidCardUrl != null) 'nidCardUrl': nidCardUrl,
     };
 
-    debugPrint('📤 Creating user profile...');
+    debugPrint('Creating user profile...');
 
     final response = await http
         .post(
@@ -54,13 +57,13 @@ class UserService {
           body: jsonEncode(body),
         )
         .timeout(ApiConfig.timeout);
-
+    //if 201 then success other fails
     if (response.statusCode != 201) {
       final error = jsonDecode(response.body);
       throw Exception(error['error'] ?? 'Failed to create user');
     }
 
-    debugPrint('✅ User profile created');
+    debugPrint('User profile created');
   }
 
   Future<Map<String, dynamic>?> getCurrentUser() async {
@@ -76,7 +79,7 @@ class UserService {
     if (response.statusCode == 404) {
       return null;
     }
-
+    //if 200 then also success
     if (response.statusCode != 200) {
       final error = jsonDecode(response.body);
       throw Exception(error['error'] ?? 'Failed to fetch user');
@@ -114,7 +117,7 @@ class UserService {
       throw Exception(error['error'] ?? 'Failed to update user');
     }
 
-    debugPrint('✅ User profile updated');
+    debugPrint('User profile updated');
   }
 
   Future<String?> getUserName(String userId) async {
@@ -127,7 +130,7 @@ class UserService {
     }
   }
 
-  /// Get user by ID (for viewing other users' profiles)
+  // Get user by ID for viewing other users profiles
   Future<Map<String, dynamic>?> getUserById(String userId) async {
     if (userId.isEmpty) return null;
 
@@ -150,6 +153,7 @@ class UserService {
     }
 
     final data = jsonDecode(response.body);
+    print('User data from the func: $data');
     return data['data'];
   }
 }

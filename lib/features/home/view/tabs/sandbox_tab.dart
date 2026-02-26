@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import 'package:investify/utils/sizes/size.dart';
 import 'package:investify/utils/theme/app_colors.dart';
 
-import '../../../sandbox/controller/sandbox_controller.dart';
-import '../../../post_idea/view/widgets/section_card.dart';
 import '../../../post_idea/view/widgets/add_photo_button.dart';
+import '../../../post_idea/view/widgets/section_card.dart';
+import '../../../sandbox/controller/sandbox_controller.dart';
 
 /// Sandbox tab — submit content for AI review before posting
 class SandboxTab extends StatelessWidget {
@@ -439,7 +439,6 @@ class SandboxTab extends StatelessWidget {
           SectionCard(
             icon: Icons.cloud_upload_outlined,
             title: 'Upload Video',
-            subtitle: 'MP4, MOV up to 50MB',
             onTap: controller.pickVideo,
           ),
       ],

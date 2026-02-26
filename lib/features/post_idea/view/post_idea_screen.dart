@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/utils/constants/const_texts.dart';
@@ -73,7 +74,6 @@ class PostIdeaScreen extends StatelessWidget {
             // Bottom Action Buttons
             Obx(
               () => ActionButtons(
-                onSaveDraft: controller.saveDraft,
                 onPublish: controller.publishPost,
                 isPublishing: controller.isPublishing.value,
                 isSavingDraft: controller.isSavingDraft.value,
@@ -86,13 +86,12 @@ class PostIdeaScreen extends StatelessWidget {
     );
   }
 
-  /// Build the content text input section
   Widget _buildContentSection(
     BuildContext context,
     PostIdeaController controller,
   ) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Container(
       decoration: BoxDecoration(
@@ -137,8 +136,7 @@ class PostIdeaScreen extends StatelessWidget {
                       ? SizedBox(
                           width: RomRomSizes.large,
                           height: RomRomSizes.large,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                          child: CupertinoActivityIndicator(
                             color: theme.colorScheme.primary,
                           ),
                         )
@@ -176,13 +174,12 @@ class PostIdeaScreen extends StatelessWidget {
     );
   }
 
-  /// Build the pitch video upload section
   Widget _buildPitchVideoSection(
     BuildContext context,
     PostIdeaController controller,
   ) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,18 +196,11 @@ class PostIdeaScreen extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Text(
-              'MAX 5 MIN',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
           ],
         ),
         const SizedBox(height: 12),
         Obx(() {
           if (controller.videoPitchBytes.value != null) {
-            // Show selected video
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -264,7 +254,6 @@ class PostIdeaScreen extends StatelessWidget {
           return SectionCard(
             icon: Icons.cloud_upload_outlined,
             title: 'Upload Video Pitch',
-            subtitle: 'MP4, MOV up to 50MB',
             onTap: controller.pickVideo,
           );
         }),
@@ -272,7 +261,6 @@ class PostIdeaScreen extends StatelessWidget {
     );
   }
 
-  /// Build the gallery/deck section
   Widget _buildGallerySection(
     BuildContext context,
     PostIdeaController controller,

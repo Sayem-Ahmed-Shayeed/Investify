@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:investify/utils/sizes/size.dart';
 import 'package:investify/utils/theme/app_colors.dart';
 
-/// Reusable dashed border section card for upload areas
 class SectionCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
   final VoidCallback onTap;
   final bool hasContent;
 
@@ -14,7 +12,6 @@ class SectionCard extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
-    required this.subtitle,
     required this.onTap,
     this.hasContent = false,
   });
@@ -61,13 +58,6 @@ class SectionCard extends StatelessWidget {
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: RomRomSizes.spaceBetweenItem),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],

@@ -9,7 +9,9 @@ import '../../../utils/constants/api_config.dart';
 /// Service for submitting sandbox content to the backend for n8n review
 class SandboxService {
   static final SandboxService _instance = SandboxService._internal();
+
   factory SandboxService() => _instance;
+
   SandboxService._internal();
 
   Future<String?> _getIdToken() async {

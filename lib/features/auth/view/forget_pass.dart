@@ -16,7 +16,7 @@ class ForgetPasswordScreen extends StatelessWidget {
     final controller = Get.find<AuthController>();
     final themeController = Get.find<ThemeController>();
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -39,9 +39,7 @@ class ForgetPasswordScreen extends StatelessWidget {
           Obx(
             () => IconButton(
               icon: Icon(
-                themeController.isDarkMode
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
+                themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 color: isDark
                     ? AppColors.textPrimaryDark
                     : AppColors.textPrimaryLight,
@@ -127,10 +125,7 @@ class _EmailSentCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
-          Text(
-            "Email Sent!",
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text("Email Sent!", style: theme.textTheme.headlineMedium),
           const SizedBox(height: RomRomSizes.spaceBetweenItem),
           Text(
             "We've sent a password reset link to",
@@ -222,7 +217,9 @@ class _ForgetPasswordCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
+              color: isDark
+                  ? AppColors.inputFillDark
+                  : AppColors.inputFillLight,
               borderRadius: BorderRadius.circular(50),
             ),
             child: Icon(
@@ -232,10 +229,7 @@ class _ForgetPasswordCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
-          Text(
-            "Reset Password",
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text("Reset Password", style: theme.textTheme.headlineMedium),
           const SizedBox(height: RomRomSizes.spaceBetweenItem),
           Text(
             "Enter your email address and we'll send you\na link to reset your password.",

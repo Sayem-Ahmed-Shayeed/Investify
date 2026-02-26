@@ -145,51 +145,98 @@ class ProfileHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
-          width: 0.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Avatar
-          ProfileAvatar(authController: authController),
-          const SizedBox(width: 16),
-
-          // Name + email
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Obx(
-                  () => Text(
-                    authController.cachedUserName.value.isNotEmpty
-                        ? authController.cachedUserName.value
-                        : 'User',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  authController.getCurrentUserEmail,
-                  style: theme.textTheme.bodySmall,
-                ),
-              ],
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark ? AppColors.cardBorderDark : AppColors.cardBorderLight,
+              width: 0.5,
             ),
           ),
+          child: Row(
+            children: [
+              // Avatar
+              ProfileAvatar(authController: authController),
+              const SizedBox(width: 16),
 
-          // Post count
-          Obx(() => ProfilePostCount(count: profileController.posts.length)),
-        ],
-      ),
+              // Name + email
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Obx(
+                      () => Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              authController.cachedUserName.value.isNotEmpty
+                                  ? authController.cachedUserName.value
+                                  : 'User',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          if (authController.isVerified.value) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.verified,
+                              size: 18,
+                              color: Colors.blue.shade600,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      authController.getCurrentUserEmail,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Post count
+              Obx(() => ProfilePostCount(count: profileController.posts.length)),
+            ],
+          ),
+        ),
+        // Verification banner
+        Obx(() {
+          if (!authController.isVerified.value) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.hourglass_empty, color: Colors.orange.shade700, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Waiting for admin approval. You cannot post or view others posts.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.orange.shade900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ],
     );
   }
 }

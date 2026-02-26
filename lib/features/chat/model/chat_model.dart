@@ -19,7 +19,6 @@ class ChatMessage {
     this.status = MessageStatus.sent,
   });
 
-  // Add copyWith method for updating message status
   ChatMessage copyWith({
     String? id,
     String? senderId,

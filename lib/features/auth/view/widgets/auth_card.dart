@@ -16,7 +16,7 @@ class AuthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<AuthController>();
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Container(
       width: 360,
@@ -35,7 +35,9 @@ class AuthCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.inputFillDark : AppColors.inputFillLight,
+              color: isDark
+                  ? AppColors.inputFillDark
+                  : AppColors.inputFillLight,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -45,10 +47,7 @@ class AuthCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
-          Text(
-            "Sign in with email",
-            style: theme.textTheme.headlineMedium,
-          ),
+          Text("Sign in with email", style: theme.textTheme.headlineMedium),
           const SizedBox(height: RomRomSizes.spaceBetweenItem),
           Text(
             "Make a new doc to bring your words, data,\nand teams together. For free",
@@ -121,10 +120,7 @@ class AuthCard extends StatelessWidget {
           ),
 
           const SizedBox(height: RomRomSizes.spaceBetweenElements),
-          Text(
-            "Or sign in with",
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text("Or sign in with", style: theme.textTheme.bodyMedium),
 
           const SizedBox(height: 12),
 
@@ -144,10 +140,7 @@ class AuthCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Don't have an account?",
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text("Don't have an account?", style: theme.textTheme.bodyMedium),
               TextButton(
                 onPressed: () {
                   controller.clearFields();

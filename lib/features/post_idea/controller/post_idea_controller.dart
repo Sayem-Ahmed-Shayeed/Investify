@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:investify/utils/constants/api_config.dart';
 import 'package:investify/utils/sizes/size.dart';
 
+import '../../auth/controller/auth_controller.dart';
 import '../../home/controller/home_feed_controller.dart';
 import '../../home/controller/nav_bar_controller.dart';
 import '../services/media_upload_service.dart';
@@ -184,43 +185,19 @@ class PostIdeaController extends GetxController {
     return null;
   }
 
-  /// Save post as draft
-  Future<void> saveDraft() async {
-    final validationError = _validatePost();
-    if (validationError != null) {
-      _showMessage('Error', validationError, isError: true);
+  /// Publish post
+  Future<void> publishPost() async {
+    // Check if user is verified
+    final authController = Get.find<AuthController>();
+    if (!authController.isVerified.value) {
+      _showMessage(
+        'Account Not Verified',
+        'Please wait for admin approval to post.',
+        isError: true,
+      );
       return;
     }
 
-    isSavingDraft.value = true;
-    uploadStatus.value = 'Uploading media...';
-
-    try {
-      // Upload media files
-      final uploadedMedia = await _uploadAllMedia();
-
-      // Create post via API
-      uploadStatus.value = 'Saving draft...';
-      await _postService.createPost(
-        caption: content.value.trim(),
-        media: uploadedMedia,
-        isDraft: true,
-      );
-
-      isSavingDraft.value = false;
-      uploadStatus.value = '';
-      _showMessage('Success', 'Draft saved successfully!');
-      _clearForm();
-      Get.back();
-    } catch (e) {
-      isSavingDraft.value = false;
-      uploadStatus.value = '';
-      _showMessage('Error', 'Failed to save draft: $e', isError: true);
-    }
-  }
-
-  /// Publish post
-  Future<void> publishPost() async {
     final validationError = _validatePost();
     if (validationError != null) {
       _showMessage('Error', validationError, isError: true);
@@ -277,10 +254,10 @@ class PostIdeaController extends GetxController {
             videoPitchPath.value!,
           );
           if (thumbnailBytes != null) {
-            debugPrint('✅ Thumbnail generated: ${thumbnailBytes.length} bytes');
+            debugPrint('Thumbnail generated: ${thumbnailBytes.length} bytes');
           }
         } catch (e) {
-          debugPrint('⚠️ Thumbnail generation failed: $e');
+          debugPrint('Thumbnail generation failed: $e');
           // Continue without thumbnail
         }
       }
@@ -296,7 +273,7 @@ class PostIdeaController extends GetxController {
           thumbnailBytes: thumbnailBytes,
         );
         uploadedMedia.add(uploadedVideo);
-        debugPrint('✅ Video uploaded: ${uploadedVideo.url}');
+        debugPrint('Video uploaded: ${uploadedVideo.url}');
         if (uploadedVideo.thumbnailUrl != null) {
           debugPrint('✅ Thumbnail URL: ${uploadedVideo.thumbnailUrl}');
         }

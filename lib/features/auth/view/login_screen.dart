@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Get.isDarkMode;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -21,17 +21,12 @@ class LoginScreen extends StatelessWidget {
           Obx(
             () => IconButton(
               icon: Icon(
-                themeController.isDarkMode
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
+                themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 color: isDark
                     ? AppColors.textPrimaryDark
                     : AppColors.textPrimaryLight,
               ),
               onPressed: themeController.toggleTheme,
-              tooltip: themeController.isDarkMode
-                  ? 'Switch to Light Mode'
-                  : 'Switch to Dark Mode',
             ),
           ),
         ],

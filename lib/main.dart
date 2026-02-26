@@ -15,11 +15,7 @@ import 'utils/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Initialize SharedPreferences and ThemeController
   await SharedPreferences.getInstance();
   final themeController = Get.put(ThemeController());
 
@@ -27,7 +23,6 @@ void main() async {
   OneSignal.initialize("cfdc4a9c-e3a1-4a1b-9d51-ae99f62e743f");
   OneSignal.Notifications.requestPermission(true);
 
-  // Link OneSignal device to Firebase UID so include_external_user_ids works
   FirebaseAuth.instance.authStateChanges().listen((user) {
     if (user != null) {
       OneSignal.login(user.uid);
@@ -36,7 +31,6 @@ void main() async {
     }
   });
 
-  // Handle notification tap → navigate to the correct chat room
   OneSignal.Notifications.addClickListener((event) {
     final data = event.notification.additionalData;
     if (data != null && data['type'] == 'chat_message') {
@@ -45,7 +39,6 @@ void main() async {
       final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
       if (roomId != null && roomId.isNotEmpty) {
-        // Ensure ChatController exists before navigating
         if (!Get.isRegistered<ChatController>()) return;
 
         Get.to(
@@ -60,7 +53,6 @@ void main() async {
   });
 
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
-    // Show the notification in the foreground
     event.notification.display();
   });
 

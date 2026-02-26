@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// Global app theme configuration
 class AppTheme {
   AppTheme._();
 
   static const String _fontFamily = 'poppins';
 
-  /// Light theme configuration
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
@@ -128,8 +126,6 @@ class AppTheme {
     ),
   );
 
-  ///===========================================================
-  /// Dark theme configuration
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,

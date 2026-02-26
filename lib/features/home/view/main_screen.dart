@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/features/admin/view/admin_panel.dart';
 import 'package:investify/features/auth/controller/auth_controller.dart';
 import 'package:investify/features/home/view/navbar/bottom_nav_bar.dart';
 import 'package:investify/features/settings/controller/theme_controller.dart';
@@ -37,6 +38,14 @@ class _MainScreenState extends State<MainScreen> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
+          actions: [
+            if (authController.isAdmin.value)
+              IconButton(
+                onPressed: () => Get.to(() => const AdminPanel()),
+                icon: const Icon(Icons.admin_panel_settings),
+                tooltip: 'Admin Panel',
+              ),
+          ],
         ),
         body: SizedBox(
           width: double.infinity,
