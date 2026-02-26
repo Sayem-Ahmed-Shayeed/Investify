@@ -179,6 +179,31 @@ class MediaUploadService {
     );
   }
 
+  /// Upload a single PDF and return its public URL
+  Future<UploadedMedia> uploadPdf(UploadFile file) async {
+    const mimeType = 'application/pdf';
+
+    debugPrint('📤 Requesting pre-signed URL for PDF...');
+    final presigned = await _getPresignedUrl(
+      fileType: 'pdf',
+      mimeType: mimeType,
+    );
+
+    debugPrint('📤 Uploading PDF to Spaces...');
+    await _uploadToSpaces(
+      uploadUrl: presigned.uploadUrl,
+      bytes: file.bytes,
+      mimeType: mimeType,
+    );
+
+    return UploadedMedia(
+      url: presigned.publicUrl,
+      fileKey: presigned.fileKey,
+      type: 'pdf',
+      mimeType: mimeType,
+    );
+  }
+
   /// Upload a single video and return its public URL with optional thumbnail
   Future<UploadedMedia> uploadVideo(
     UploadFile file, {
@@ -316,7 +341,7 @@ class MediaUploadService {
 class UploadedMedia {
   final String url;
   final String fileKey;
-  final String type; // 'image' or 'video'
+  final String type; // 'image', 'video', or 'pdf'
   final String mimeType;
   final String? thumbnailUrl;
   final int order;

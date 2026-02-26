@@ -7,9 +7,9 @@ router.post('/presigned-url', async (req, res) => {
     const { fileType, mimeType } = req.body;
     const userId = req.user.uid;
 
-    if (!fileType || !['image', 'video'].includes(fileType)) {
-      return res.status(400).json({ 
-        error: 'Invalid fileType. Must be "image" or "video"' 
+    if (!fileType || !['image', 'video', 'pdf'].includes(fileType)) {
+      return res.status(400).json({
+        error: 'Invalid fileType. Must be "image", "video", or "pdf"'
       });
     }
 
@@ -47,8 +47,8 @@ router.post('/batch-presigned-urls', async (req, res) => {
       files.map(async (file, index) => {
         try {
           const result = await spacesService.generateUploadUrl(
-            file.fileType, 
-            file.mimeType, 
+            file.fileType,
+            file.mimeType,
             userId
           );
           return { success: true, index, ...result };
@@ -72,13 +72,13 @@ router.post('/batch-presigned-urls', async (req, res) => {
 router.delete('/file', async (req, res) => {
   try {
     const { publicUrl } = req.body;
-    
+
     if (!publicUrl) {
       return res.status(400).json({ error: 'publicUrl is required' });
     }
 
     const fileKey = spacesService.extractFileKey(publicUrl);
-    
+
     if (!fileKey.includes(req.user.uid)) {
       return res.status(403).json({ error: 'Unauthorized to delete this file' });
     }

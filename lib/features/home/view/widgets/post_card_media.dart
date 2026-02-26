@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/home/view/widgets/post_card_video_player.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../utils/theme/app_colors.dart';
 import '../../../post_idea/model/post_idea_model.dart';
@@ -23,6 +24,7 @@ class PostCardMedia extends StatelessWidget {
 
     final videos = post.media.where((m) => m.type == 'video').toList();
     final images = post.media.where((m) => m.type == 'image').toList();
+    final pdfs = post.media.where((m) => m.type == 'pdf').toList();
 
     return Column(
       children: [
@@ -81,8 +83,56 @@ class PostCardMedia extends StatelessWidget {
                     ),
                   ),
           ),
+
+        if (pdfs.isNotEmpty) ...[
+          if (images.isNotEmpty || videos.isNotEmpty) const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () => _openPdf(pdfs.first.url),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.red.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.red.withValues(alpha: 0.3)
+                      : Colors.red.shade200,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.picture_as_pdf,
+                    color: Colors.red.shade400,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'View PDF Attachment',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade400,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.open_in_new, color: Colors.red.shade400, size: 18),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
     );
+  }
+
+  void _openPdf(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _buildMediaPlaceholder(bool isDark) {

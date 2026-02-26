@@ -66,6 +66,10 @@ class PostIdeaScreen extends StatelessWidget {
                     // Gallery/Deck Section
                     _buildGallerySection(context, controller),
                     const SizedBox(height: 24),
+
+                    // PDF Attachment Section
+                    _buildPdfSection(context, controller),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -314,5 +318,80 @@ class PostIdeaScreen extends StatelessWidget {
         }),
       ],
     );
+  }
+
+  /// Build the PDF attachment section
+  Widget _buildPdfSection(BuildContext context, PostIdeaController controller) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Obx(() {
+      final hasPdf = controller.pdfFileName.value != null;
+
+      if (hasPdf) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E2A38) : Colors.red.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark
+                  ? Colors.red.withValues(alpha: 0.3)
+                  : Colors.red.shade200,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.picture_as_pdf, color: Colors.red.shade400, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  controller.pdfFileName.value!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              IconButton(
+                onPressed: controller.removePdf,
+                icon: Icon(
+                  Icons.close,
+                  color: theme.colorScheme.outline,
+                  size: 20,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return OutlinedButton.icon(
+        onPressed: controller.pickPdf,
+        icon: Icon(
+          Icons.attach_file,
+          color: isDark ? Colors.white70 : Colors.grey.shade700,
+        ),
+        label: Text(
+          'Attach PDF (optional)',
+          style: TextStyle(
+            color: isDark ? Colors.white70 : Colors.grey.shade700,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          side: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.grey.shade300,
+          ),
+        ),
+      );
+    });
   }
 }
