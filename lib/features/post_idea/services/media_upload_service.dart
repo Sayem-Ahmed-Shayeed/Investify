@@ -38,14 +38,7 @@ class UploadFile {
   UploadFile({required this.name, required this.bytes});
 }
 
-/// Service for uploading media to DigitalOcean Spaces via secure pre-signed URLs
-///
-/// Flow:
-/// 1. Request pre-signed URL from backend (backend has Spaces credentials)
-/// 2. Upload file directly to Spaces using the pre-signed URL
-/// 3. Return the public URL for storing in the database
-///
-/// This ensures Spaces credentials NEVER touch the mobile app
+
 class MediaUploadService {
   static final MediaUploadService _instance = MediaUploadService._internal();
 
@@ -242,7 +235,6 @@ class MediaUploadService {
         debugPrint('✅ Thumbnail uploaded: $thumbnailUrl');
       } catch (e) {
         debugPrint('⚠️ Failed to upload thumbnail: $e');
-        // Continue without thumbnail - video still uploads successfully
       }
     }
 

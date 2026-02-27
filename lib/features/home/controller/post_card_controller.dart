@@ -11,7 +11,6 @@ class PostCardController extends GetxController {
   final PageController pageController = PageController();
 
   // UI state
-  final isSaved = false.obs;
   final isExpanded = false.obs;
 
   // User cache: userId -> user data
@@ -26,12 +25,6 @@ class PostCardController extends GetxController {
 
   void onPageChanged(int index) {
     currentMediaIndex.value = index;
-  }
-
-  /// Toggle saved/bookmark state
-  void toggleSaved() {
-    isSaved.value = !isSaved.value;
-    // TODO: Implement actual save/bookmark logic (e.g., save to backend)
   }
 
   /// Toggle expanded description state
@@ -68,25 +61,6 @@ class PostCardController extends GetxController {
     } finally {
       isLoadingUser[userId] = false;
     }
-  }
-
-  /// Calculate match percentage based on tags
-  int calculateMatchPercentage(List<String> postTags) {
-    // TODO: Implement actual matching algorithm based on user interests
-    // For now, return a random percentage between 85-98
-    if (postTags.isEmpty) return 90;
-    return 85 + (postTags.length % 14);
-  }
-
-  /// Handle connect button action
-  void onConnect(PostIdeaModel post) {
-    Get.snackbar(
-      'Connection Request',
-      'Connecting with this startup...',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-    );
-    // TODO: Implement actual connect logic
   }
 
   /// Navigate to post detail page

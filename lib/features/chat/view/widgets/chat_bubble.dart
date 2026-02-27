@@ -34,7 +34,6 @@ class ChatBubble extends StatelessWidget {
         );
       case MessageStatus.sent:
       case MessageStatus.read:
-        // Don't show any status indicator when sent
         return SizedBox.shrink();
     }
   }

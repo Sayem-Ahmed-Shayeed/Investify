@@ -113,7 +113,6 @@ class Profile extends StatelessWidget {
                   final post = profileController.posts[index];
                   return PostCard(
                     post: post,
-                    onLike: () {},
                     isOwnPost: true,
                     onEdit: () => profileController.editPost(post),
                     onDelete: () => profileController.deletePost(post.id!),

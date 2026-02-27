@@ -56,8 +56,7 @@ class PostIdeaController extends GetxController {
     contentController.dispose();
     super.onClose();
   }
-
-  /// Enhance content text using AI (grammar/spelling correction)
+  
   Future<void> enhanceContent() async {
     final text = content.value.trim();
     if (text.isEmpty) {

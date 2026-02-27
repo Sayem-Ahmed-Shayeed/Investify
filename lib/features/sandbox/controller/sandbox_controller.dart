@@ -49,12 +49,10 @@ class SandboxController extends GetxController {
     }
   }
 
-  /// Refresh the tab state completely
   Future<void> refreshStatus() async {
     await _checkStatus();
   }
 
-  /// User acknowledges the review and returns to normal form
   Future<void> acknowledgeReview() async {
     try {
       await _sandboxService.acknowledgeReview();
@@ -65,12 +63,10 @@ class SandboxController extends GetxController {
     }
   }
 
-  /// Update caption text
   void updateCaption(String value) {
     captionText.value = value;
   }
 
-  /// Pick a video file
   Future<void> pickVideo() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -128,7 +124,6 @@ class SandboxController extends GetxController {
 
   /// Submit content for AI review
   Future<void> submitForReview() async {
-    // Validate
     if (captionText.value.trim().isEmpty) {
       _showMessage(
         'Missing Caption',
@@ -190,7 +185,6 @@ class SandboxController extends GetxController {
         }
       }
 
-      // Submit to backend (which triggers n8n webhook)
       uploadStatus.value = 'Submitting for review...';
 
       await _sandboxService.submitForReview(
@@ -198,13 +192,10 @@ class SandboxController extends GetxController {
         media: uploadedMedia,
       );
 
-      // Set UI to pending mode immediately
       isPending.value = true;
 
-      // Clear form
       _clearForm();
 
-      // Show success dialog
       _showSuccessDialog();
     } catch (e) {
       debugPrint('❌ Sandbox submit error: $e');

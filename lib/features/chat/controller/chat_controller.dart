@@ -211,7 +211,6 @@ class ChatController extends GetxController {
     _currentRoomReceiverUid = receiverUid;
   }
 
-  /// Listen to messages - simplified without seen status tracking
   void listenToMessages(String roomId) {
     _messagesSubscription?.cancel();
     currentMessages.clear();
@@ -310,7 +309,6 @@ class ChatController extends GetxController {
         scrollToBottom();
       });
 
-      // Store to firestore
       await msgRef.set({
         'senderId': _currentUid,
         'content': text,

@@ -27,7 +27,7 @@ class AuthController extends GetxController {
   final name = ''.obs;
   final age = 0.obs;
   final confirmPassword = ''.obs;
-  final nidCardImagePath = Rxn<String>(); //Reactive obserable variable
+  final nidCardImagePath = Rxn<String>(); 
   final nidCardFileName = Rxn<String>();
   Uint8List? nidCardBytes;
 

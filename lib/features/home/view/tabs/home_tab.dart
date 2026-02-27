@@ -100,7 +100,6 @@ class HomeTab extends StatelessWidget {
               final post = controller.posts[index];
               return PostCard(
                 post: post,
-                onLike: () => controller.toggleLike(post.id!),
                 isOwnPost: post.userId == currentUid,
                 onEdit: () => controller.editPost(post),
                 onDelete: () => controller.deletePost(post.id!),

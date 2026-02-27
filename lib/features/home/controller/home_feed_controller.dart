@@ -90,22 +90,6 @@ class HomeFeedController extends GetxController {
     await fetchPosts();
   }
 
-  /// Toggle like on a post
-  Future<void> toggleLike(String postId) async {
-    try {
-      final response = await _postService.toggleLike(postId);
-
-      // Update the post in the list
-      final index = posts.indexWhere((p) => p.id == postId);
-      if (index != -1) {
-        final post = posts[index];
-        posts[index] = post.copyWith(likes: response.likes);
-      }
-    } catch (e) {
-      debugPrint('❌ Error toggling like: $e');
-    }
-  }
-
   /// Delete a post with confirmation dialog
   void deletePost(String postId) {
     Get.dialog(
@@ -119,7 +103,7 @@ class HomeFeedController extends GetxController {
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           TextButton(
             onPressed: () async {
-              Get.back(); // Close dialog
+              Get.back(); 
               try {
                 await _postService.deletePost(postId);
                 posts.removeWhere((p) => p.id == postId);

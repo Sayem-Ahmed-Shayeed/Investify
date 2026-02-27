@@ -12,7 +12,6 @@ import '../../controller/post_card_controller.dart';
 
 class PostCard extends StatelessWidget {
   final PostIdeaModel post;
-  final VoidCallback onLike;
   final bool isOwnPost;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -20,7 +19,6 @@ class PostCard extends StatelessWidget {
   const PostCard({
     super.key,
     required this.post,
-    required this.onLike,
     this.isOwnPost = false,
     this.onEdit,
     this.onDelete,

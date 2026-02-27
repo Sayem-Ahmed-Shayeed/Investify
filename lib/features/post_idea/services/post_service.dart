@@ -180,28 +180,6 @@ class PostService {
     debugPrint('✅ Post deleted successfully');
   }
 
-  /// Like or unlike a post
-  Future<LikeResponse> toggleLike(String postId) async {
-    final headers = await _getAuthHeaders();
-
-    final response = await http
-        .post(
-          Uri.parse('${ApiConfig.baseUrl}${ApiConfig.posts}/$postId/like'),
-          headers: headers,
-        )
-        .timeout(ApiConfig.timeout);
-
-    if (response.statusCode != 200) {
-      final error = jsonDecode(response.body);
-      throw Exception(error['error'] ?? 'Failed to toggle like');
-    }
-
-    final data = jsonDecode(response.body);
-    return LikeResponse(
-      liked: data['data']['liked'] as bool,
-      likes: data['data']['likes'] as int,
-    );
-  }
 }
 
 /// Response containing a list of posts with pagination

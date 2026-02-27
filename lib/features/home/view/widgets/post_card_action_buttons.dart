@@ -111,39 +111,6 @@ class PostCardActions extends StatelessWidget {
               ),
             ),
           ),
-
-        const SizedBox(width: 12),
-
-        if (!isOwnPost)
-          Obx(() {
-            final isSaved = controller.isSaved.value;
-            return Container(
-              decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.inputFillDark
-                    : AppColors.inputFillLight,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDark
-                      ? AppColors.cardBorderDark
-                      : AppColors.cardBorderLight,
-                ),
-              ),
-              child: IconButton(
-                onPressed: controller.toggleSaved,
-                icon: Icon(
-                  isSaved ? Icons.bookmark : Icons.bookmark_border,
-                  color: isSaved
-                      ? (isDark
-                            ? AppColors.primaryDark
-                            : AppColors.primaryLight)
-                      : (isDark ? AppColors.iconDark : AppColors.iconLight),
-                ),
-                constraints: const BoxConstraints(),
-                padding: const EdgeInsets.all(10),
-              ),
-            );
-          }),
       ],
     );
   }

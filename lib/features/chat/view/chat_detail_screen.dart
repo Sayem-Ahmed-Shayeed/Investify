@@ -38,7 +38,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _chatController.listenToMessages(widget.roomID);
     _loadReceiver();
 
-    // Auto-scroll to bottom when screen is first opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _chatController.scrollToBottom();
     });

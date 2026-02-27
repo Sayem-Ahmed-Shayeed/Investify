@@ -11,7 +11,6 @@ class VideoThumbnailService {
   VideoThumbnailService._internal();
 
   /// Generate a thumbnail from a video file path (mobile only)
-  /// Returns null if thumbnail generation fails or on web
   Future<Uint8List?> generateThumbnailFromFile(String videoPath) async {
     if (kIsWeb) {
       debugPrint('⚠️ Thumbnail generation not supported on web');
@@ -25,7 +24,7 @@ class VideoThumbnailService {
         imageFormat: ImageFormat.JPEG,
         maxWidth: 480,
         quality: 75,
-        timeMs: 1000, // Get frame at 1 second
+        timeMs: 1000, 
       );
 
       if (thumbnail != null) {

@@ -10,7 +10,6 @@ class PostDetailController extends GetxController {
   PostDetailController(this.post);
 
   // State
-  final isSaved = false.obs;
   final isAboutExpanded = false.obs;
   final currentMediaIndex = 0.obs;
 
@@ -53,12 +52,6 @@ class PostDetailController extends GetxController {
     }
   }
 
-  /// Toggle saved/bookmark state
-  void toggleSaved() {
-    isSaved.value = !isSaved.value;
-    // TODO: Implement actual save logic
-  }
-
   /// Toggle about section expansion
   void toggleAboutExpanded() {
     isAboutExpanded.value = !isAboutExpanded.value;
@@ -67,29 +60,5 @@ class PostDetailController extends GetxController {
   /// Handle page change in media carousel
   void onPageChanged(int index) {
     currentMediaIndex.value = index;
-  }
-
-  /// Calculate match percentage
-  int calculateMatchPercentage() {
-    // TODO: Implement actual matching algorithm
-    if (post.tags.isEmpty) return 90;
-    return 85 + (post.tags.length % 14);
-  }
-
-  /// Handle share action
-  void onShare() {
-    Get.snackbar(
-      'Share',
-      'Sharing ${userData.value?['name'] ?? 'this startup'}...',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-    );
-    // TODO: Implement actual share functionality
-  }
-
-  /// Handle invest now action - navigate to messages tab
-  void onInvestNow() {
-    final userName = userData.value?['name'] ?? 'this startup';
-    // TODO: Implement navigating to the chat page start chat make a room and start chatting
   }
 }
