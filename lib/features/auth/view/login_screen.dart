@@ -14,23 +14,7 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Obx(
-            () => IconButton(
-              icon: Icon(
-                themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                color: isDark
-                    ? AppColors.textPrimaryDark
-                    : AppColors.textPrimaryLight,
-              ),
-              onPressed: themeController.toggleTheme,
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: Container(
         width: double.infinity,
         height: double.infinity,

@@ -31,6 +31,10 @@ class AuthController extends GetxController {
   final nidCardFileName = Rxn<String>();
   Uint8List? nidCardBytes;
 
+  // Investor fields
+  final isInvestor = false.obs;
+  final phoneNumber = ''.obs;
+
   // UI state
   final isLoading = false.obs;
   final obscurePassword = true.obs;
@@ -48,6 +52,7 @@ class AuthController extends GetxController {
   final cachedUserName = ''.obs;
   final cachedProfileImageUrl = Rxn<String>();
   final isUploadingProfileImage = false.obs;
+  final cachedIsInvestor = false.obs;
 
   // Verification status
   final isVerified = false.obs;
@@ -111,6 +116,7 @@ class AuthController extends GetxController {
         if (userData['profileImageUrl'] != null) {
           cachedProfileImageUrl.value = userData['profileImageUrl'];
         }
+        cachedIsInvestor.value = userData['isInvestor'] ?? false;
       }
     } catch (e) {
       debugPrint('Failed to fetch user profile: $e');
@@ -241,6 +247,9 @@ class AuthController extends GetxController {
     }
     if (nidCardImagePath.value == null) {
       return 'Please upload your NID card image';
+    }
+    if (isInvestor.value && phoneNumber.value.trim().isEmpty) {
+      return 'Phone number is required for investors';
     }
     return null;
   }
@@ -374,6 +383,8 @@ class AuthController extends GetxController {
           email: email.value.trim(),
           age: age.value,
           nidCardUrl: nidCardUrl,
+          isInvestor: isInvestor.value,
+          phoneNumber: phoneNumber.value.trim(),
         );
       }
 
@@ -406,6 +417,8 @@ class AuthController extends GetxController {
           email: email.value.trim(),
           age: age.value,
           nidCardUrl: nidCardUrl,
+          isInvestor: isInvestor.value,
+          phoneNumber: phoneNumber.value.trim(),
         );
 
         await sendEmailVerification();
@@ -588,6 +601,8 @@ class AuthController extends GetxController {
     confirmPassword.value = '';
     name.value = '';
     age.value = 0;
+    isInvestor.value = false;
+    phoneNumber.value = '';
     clearNidCardImage();
   }
 }

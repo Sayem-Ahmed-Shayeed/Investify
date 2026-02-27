@@ -45,6 +45,7 @@ class ChatUser {
   final String name;
   final String? avatarUrl;
   final bool isVerified;
+  final bool isInvestor;
   final String? investorLevel;
 
   const ChatUser({
@@ -52,6 +53,7 @@ class ChatUser {
     required this.name,
     this.avatarUrl,
     this.isVerified = false,
+    this.isInvestor = false,
     this.investorLevel,
   });
 }

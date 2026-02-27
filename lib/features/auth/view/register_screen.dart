@@ -32,19 +32,6 @@ class RegisterScreen extends StatelessWidget {
           ),
           onPressed: () => Get.back(),
         ),
-        actions: [
-          Obx(
-            () => IconButton(
-              icon: Icon(
-                themeController.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                color: isDark
-                    ? AppColors.textPrimaryDark
-                    : AppColors.textPrimaryLight,
-              ),
-              onPressed: themeController.toggleTheme,
-            ),
-          ),
-        ],
       ),
       body: Container(
         width: double.infinity,
@@ -187,6 +174,45 @@ class _RegisterCard extends StatelessWidget {
               onChanged: (v) => controller.confirmPassword.value = v,
             ),
           ),
+          const SizedBox(height: MySizes.spaceBetweenElements),
+
+          // Investor checkbox
+          Obx(
+            () => CheckboxListTile(
+              value: controller.isInvestor.value,
+              onChanged: (v) => controller.isInvestor.value = v ?? false,
+              title: Text(
+                "I am an Investor",
+                style: theme.textTheme.titleMedium,
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              activeColor: isDark
+                  ? AppColors.primaryDark
+                  : AppColors.primaryLight,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+
+          // Conditional phone number field
+          Obx(
+            () => controller.isInvestor.value
+                ? Column(
+                    children: [
+                      const SizedBox(height: MySizes.medium),
+                      InputField(
+                        hint: "Phone Number",
+                        icon: Icons.phone,
+                        keyboardType: TextInputType.phone,
+                        onChanged: (v) => controller.phoneNumber.value = v,
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+
           const SizedBox(height: MySizes.spaceBetweenElements),
 
           // NID Card Image Picker

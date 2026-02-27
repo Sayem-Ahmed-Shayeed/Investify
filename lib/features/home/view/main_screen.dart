@@ -38,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
+          scrolledUnderElevation: 0,
           actions: [
             if (authController.isAdmin.value)
               IconButton(

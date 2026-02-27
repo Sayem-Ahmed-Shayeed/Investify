@@ -38,6 +38,8 @@ class UserService {
     String? email,
     int? age,
     String? nidCardUrl,
+    bool isInvestor = false,
+    String? phoneNumber,
   }) async {
     final headers = await _getAuthHeaders();
 
@@ -46,6 +48,9 @@ class UserService {
       if (email != null) 'email': email,
       if (age != null) 'age': age,
       if (nidCardUrl != null) 'nidCardUrl': nidCardUrl,
+      'isInvestor': isInvestor,
+      if (phoneNumber != null && phoneNumber.isNotEmpty)
+        'phoneNumber': phoneNumber,
     };
 
     debugPrint('Creating user profile...');

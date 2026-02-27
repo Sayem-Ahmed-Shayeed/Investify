@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/auth/services/user_service.dart';
+import 'package:investify/services/firestore_service.dart';
 import 'package:investify/services/notification_services.dart';
 
 import '../model/chat_model.dart';
@@ -103,6 +104,9 @@ class ChatController extends GetxController {
       loaded.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
       conversations.assignAll(loaded);
       isLoading.value = false;
+
+      // Enrich ChatUsers with isInvestor from Firestore (async, non-blocking)
+      _enrichConversationsWithInvestorStatus(loaded);
     }
 
     _senderConversationsSub = _db
@@ -134,6 +138,39 @@ class ChatController extends GetxController {
             isLoading.value = false;
           },
         );
+  }
+
+  /// Fetch isInvestor from Firestore for each conversation partner
+  Future<void> _enrichConversationsWithInvestorStatus(
+    List<ChatConversation> loaded,
+  ) async {
+    try {
+      final enriched = <ChatConversation>[];
+      for (final conv in loaded) {
+        final isInvestor = await FirestoreService().isUserInvestor(
+          conv.otherUser.id,
+        );
+        enriched.add(
+          ChatConversation(
+            id: conv.id,
+            otherUser: ChatUser(
+              id: conv.otherUser.id,
+              name: conv.otherUser.name,
+              avatarUrl: conv.otherUser.avatarUrl,
+              isInvestor: isInvestor,
+              isVerified: true,
+            ),
+            messages: conv.messages,
+            lastMessageTime: conv.lastMessageTime,
+            lastMessage: conv.lastMessage,
+            unreadCount: conv.unreadCount,
+          ),
+        );
+      }
+      conversations.assignAll(enriched);
+    } catch (e) {
+      debugPrint('Error enriching conversations: $e');
+    }
   }
 
   // Create room

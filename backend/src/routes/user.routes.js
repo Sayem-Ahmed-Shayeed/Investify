@@ -4,7 +4,7 @@ const User = require('../models/user.model');
 
 router.post('/', async (req, res) => {
   try {
-    const { name, email, age, nidCardUrl } = req.body;
+    const { name, email, age, nidCardUrl, isInvestor, phoneNumber } = req.body;
     const uid = req.user.uid;
 
     if (!name || name.trim().length === 0) {
@@ -18,6 +18,8 @@ router.post('/', async (req, res) => {
       if (email) user.email = email;
       if (age) user.age = age;
       if (nidCardUrl) user.nidCardUrl = nidCardUrl;
+      if (isInvestor !== undefined) user.isInvestor = isInvestor;
+      if (phoneNumber) user.phoneNumber = phoneNumber;
       await user.save();
     } else {
       user = new User({
@@ -25,7 +27,9 @@ router.post('/', async (req, res) => {
         name: name.trim(),
         email: email || req.user.email,
         age,
-        nidCardUrl
+        nidCardUrl,
+        isInvestor: isInvestor || false,
+        phoneNumber: phoneNumber || undefined
       });
       await user.save();
     }

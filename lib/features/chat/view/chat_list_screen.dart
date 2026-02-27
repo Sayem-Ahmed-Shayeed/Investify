@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:investify/utils/sizes/size.dart';
+import 'package:investify/widgets/role_badge.dart';
 
 import '../controller/chat_controller.dart';
 import '../model/chat_model.dart';
@@ -20,15 +21,6 @@ class ChatListScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(MySizes.containerPadding),
-            child: Text(
-              'Messages',
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
           Expanded(
             child: Obx(() {
               final conversations = controller.conversations;
@@ -169,14 +161,11 @@ class ChatListScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            if (user.isVerified) ...[
-                              const SizedBox(width: MySizes.spaceBetweenItem),
-                              Icon(
-                                Icons.verified,
-                                size: MySizes.iconSmall,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ],
+                            const SizedBox(width: MySizes.spaceBetweenItem),
+                            RoleBadge(
+                              isInvestor: user.isInvestor,
+                              size: MySizes.iconSmall,
+                            ),
                           ],
                         ),
                       ),

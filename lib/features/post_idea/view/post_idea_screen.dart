@@ -18,31 +18,8 @@ class PostIdeaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<PostIdeaController>();
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        leading: TextButton(
-          onPressed: () => Get.back(),
-          child: Text(
-            'Cancel',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        leadingWidth: 80,
-        title: Text(
-          'New Pitch',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,

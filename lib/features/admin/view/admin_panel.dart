@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/features/admin/view/admin_key_investors_screen.dart';
 import 'package:investify/features/admin/view/user_detail_page.dart';
 import 'package:investify/services/firestore_service.dart';
 import 'package:investify/utils/sizes/size.dart';
@@ -64,7 +65,17 @@ class _AdminPanelState extends State<AdminPanel> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Panel')),
+      appBar: AppBar(
+        title: const Text('Admin Panel'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.contact_phone_outlined),
+            tooltip: 'Manage Key Investors',
+            onPressed: () =>
+                Get.to(() => const AdminKeyInvestorsScreen()),
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CupertinoActivityIndicator())
           : _buildUsersTab(theme),

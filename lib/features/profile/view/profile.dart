@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/widgets/role_badge.dart';
 
 import '../../../utils/theme/app_colors.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -184,11 +185,9 @@ class ProfileHeader extends StatelessWidget {
                           ),
                           if (authController.isVerified.value) ...[
                             const SizedBox(width: 4),
-                            Icon(
-                              Icons.verified,
-                              size: 18,
-                              color: Colors.blue.shade600,
-                            ),
+                            Obx(() => RoleBadge(
+                              isInvestor: authController.cachedIsInvestor.value,
+                            )),
                           ],
                         ],
                       ),

@@ -6,6 +6,8 @@ class UserModel {
   final int age;
   final String? nidCardImagePath;
   final DateTime? createdAt;
+  final bool isInvestor;
+  final String? phoneNumber;
 
   UserModel({
     this.uid,
@@ -14,6 +16,8 @@ class UserModel {
     required this.age,
     this.nidCardImagePath,
     this.createdAt,
+    this.isInvestor = false,
+    this.phoneNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -24,6 +28,8 @@ class UserModel {
       'age': age,
       'nidCardImagePath': nidCardImagePath,
       'createdAt': createdAt?.toIso8601String(),
+      'isInvestor': isInvestor,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
     };
   }
 
@@ -37,6 +43,8 @@ class UserModel {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : null,
+      isInvestor: json['isInvestor'] as bool? ?? false,
+      phoneNumber: json['phoneNumber'] as String?,
     );
   }
 
@@ -47,6 +55,8 @@ class UserModel {
     int? age,
     String? nidCardImagePath,
     DateTime? createdAt,
+    bool? isInvestor,
+    String? phoneNumber,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -55,6 +65,8 @@ class UserModel {
       age: age ?? this.age,
       nidCardImagePath: nidCardImagePath ?? this.nidCardImagePath,
       createdAt: createdAt ?? this.createdAt,
+      isInvestor: isInvestor ?? this.isInvestor,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 }

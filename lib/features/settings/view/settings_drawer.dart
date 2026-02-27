@@ -9,6 +9,8 @@ import 'package:investify/features/settings/view/widgets/log_out_item.dart';
 import 'package:investify/features/settings/view/widgets/section_title.dart';
 import 'package:investify/features/settings/view/widgets/settings_group.dart';
 import 'package:investify/utils/sizes/size.dart';
+import 'package:investify/widgets/role_badge.dart';
+import 'package:investify/features/key_investors/view/key_investors_screen.dart';
 
 class SettingsDrawer extends StatelessWidget {
   const SettingsDrawer({super.key});
@@ -50,6 +52,22 @@ class SettingsDrawer extends StatelessWidget {
                         subtitle: 'English',
                         trailing: buildArrow(theme),
                         onTap: () {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: MySizes.xl),
+                  SettingsGroup(
+                    children: [
+                      BuildSettingsItem(
+                        icon: Icons.contact_phone_outlined,
+                        title: 'Key Investors Contact',
+                        trailing: buildArrow(theme),
+                        onTap: () {
+                          Get.back(); // close drawer
+                          Get.to(
+                            () => const KeyInvestorsScreen(),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -162,11 +180,23 @@ class SettingsDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(
-                  () => Text(
-                    authController.cachedUserName.value,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                  () => Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          authController.cachedUserName.value,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (authController.isVerified.value) ...[
+                        const SizedBox(width: 4),
+                        RoleBadge(
+                          isInvestor: authController.cachedIsInvestor.value,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 const SizedBox(height: MySizes.spaceBetweenItem),

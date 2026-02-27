@@ -28,7 +28,7 @@ dependencies:
   shared_preferences:
   lottie:
   smooth_page_indicator:
-  url_launcher:
+  url_launcher: ^6.3.2
   toast:
   video_player: ^2.8.2
   cached_network_image: ^3.3.1
@@ -49,6 +49,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
 
 
   fonts:

@@ -13,7 +13,41 @@ class FirestoreService {
 
   static const String _usersCollection = 'users';
   static const String _postsCollection = 'posts';
+  static const String _keyInvestorsCollection = 'key_investors';
   static const String _adminEmail = 'pshayeed1@gmail.com';
+
+  // ─── Key Investors CRUD ─────────────────────────────────────────────────────
+
+  Future<void> addKeyInvestor(Map<String, dynamic> data) async {
+    await _firestore.collection(_keyInvestorsCollection).add({
+      ...data,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getKeyInvestors() async {
+    final snapshot = await _firestore
+        .collection(_keyInvestorsCollection)
+        .get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      data['id'] = doc.id;
+      return data;
+    }).toList();
+  }
+
+  Future<void> updateKeyInvestor(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    await _firestore.collection(_keyInvestorsCollection).doc(id).update(data);
+  }
+
+  Future<void> deleteKeyInvestor(String id) async {
+    await _firestore.collection(_keyInvestorsCollection).doc(id).delete();
+  }
+
+  // ─── Admin & Auth ───────────────────────────────────────────────────────────
 
   Future<void> checkAndSetAdmin(String email, String uid) async {
     if (email.toLowerCase() == _adminEmail.toLowerCase()) {
@@ -31,6 +65,8 @@ class FirestoreService {
     int? age,
     String? nidCardUrl,
     String? profileImageUrl,
+    bool isInvestor = false,
+    String? phoneNumber,
   }) async {
     await _firestore.collection(_usersCollection).doc(uid).set({
       'isVerified': false,
@@ -40,6 +76,9 @@ class FirestoreService {
       if (age != null) 'age': age,
       if (nidCardUrl != null) 'nidCardUrl': nidCardUrl,
       if (profileImageUrl != null) 'profileImageUrl': profileImageUrl,
+      'isInvestor': isInvestor,
+      if (phoneNumber != null && phoneNumber.isNotEmpty)
+        'phoneNumber': phoneNumber,
     }, SetOptions(merge: true));
   }
 
@@ -70,6 +109,12 @@ class FirestoreService {
       return data;
     }
     return {};
+  }
+
+  /// Lightweight check: is this user an investor?
+  Future<bool> isUserInvestor(String uid) async {
+    final doc = await _firestore.collection(_usersCollection).doc(uid).get();
+    return doc.data()?['isInvestor'] ?? false;
   }
 
   Future<Map<String, bool>> getVerificationStatus(String uid) async {

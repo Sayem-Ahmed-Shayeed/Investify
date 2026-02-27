@@ -1,3 +1,5 @@
+import 'package:url_launcher/url_launcher.dart';
+
 String getDayLabel(DateTime date) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
@@ -37,4 +39,18 @@ String formatDate(DateTime date) {
     'December',
   ];
   return '${months[date.month - 1]} ${date.day}, ${date.year}';
+}
+
+Future<void> launchPhone(String number) async {
+  final uri = Uri.parse('tel:$number');
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e) {}
+}
+
+Future<void> launchEmail(String email) async {
+  final uri = Uri.parse('mailto:$email');
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e) {}
 }

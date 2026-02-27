@@ -35,13 +35,21 @@ const UserSchema = new mongoose.Schema({
   bio: {
     type: String,
     maxlength: 500
+  },
+  isInvestor: {
+    type: Boolean,
+    default: false
+  },
+  phoneNumber: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true
 });
 
 UserSchema.set('toJSON', {
-  transform: function(doc, ret) {
+  transform: function (doc, ret) {
     ret.id = ret._id;
     delete ret._id;
     delete ret.__v;

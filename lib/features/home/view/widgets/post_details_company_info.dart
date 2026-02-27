@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:investify/widgets/role_badge.dart';
 
 import '../../../../utils/theme/app_colors.dart';
 import '../../controller/post_detail_controller.dart';
@@ -75,11 +76,8 @@ class PostDetailCompanyInfo extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Icon(
-                        Icons.verified,
-                        color: isDark
-                            ? AppColors.primaryDark
-                            : AppColors.primaryLight,
+                      RoleBadge(
+                        isInvestor: userData?['isInvestor'] == true,
                         size: 20,
                       ),
                     ],

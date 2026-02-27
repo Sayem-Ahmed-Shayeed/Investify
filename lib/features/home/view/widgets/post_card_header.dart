@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:investify/features/home/view/widgets/post_card_avatar.dart';
+import 'package:investify/widgets/role_badge.dart';
 
 import '../../../../utils/theme/app_colors.dart';
 import '../../../post_idea/model/post_idea_model.dart';
@@ -53,13 +54,7 @@ class PostCardHeader extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(
-                      Icons.verified,
-                      color: isDark
-                          ? AppColors.primaryDark
-                          : AppColors.primaryLight,
-                      size: 18,
-                    ),
+                    const RoleBadge(isInvestor: false),
                   ],
                 ),
               ],

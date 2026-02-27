@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:investify/features/auth/services/user_service.dart';
 import 'package:investify/features/chat/view/widgets/chatInput.dart';
 import 'package:investify/features/chat/view/widgets/chat_bubble.dart';
+import 'package:investify/services/firestore_service.dart';
 import 'package:investify/utils/sizes/size.dart';
+import 'package:investify/widgets/role_badge.dart';
 
 import '../controller/chat_controller.dart';
 import '../model/chat_model.dart';
@@ -44,12 +46,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   Future<void> _loadReceiver() async {
     final data = await UserService().getUserById(widget.receiverUid);
+    final isInvestor = await FirestoreService().isUserInvestor(widget.receiverUid);
     if (data != null && mounted) {
       setState(() {
         _receiver = ChatUser(
           id: widget.receiverUid,
           name: data['name'] as String? ?? 'Unknown',
           avatarUrl: data['profileImageUrl'] as String?,
+          isInvestor: isInvestor,
+          isVerified: true,
         );
       });
     }
@@ -118,14 +123,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    if (receiver?.isVerified == true) ...[
-                      const SizedBox(width: MySizes.spaceBetweenItem),
-                      Icon(
-                        Icons.verified,
-                        size: MySizes.iconSmall,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ],
+                    const SizedBox(width: MySizes.spaceBetweenItem),
+                    RoleBadge(
+                      isInvestor: receiver?.isInvestor ?? false,
+                      size: MySizes.iconSmall,
+                    ),
                   ],
                 ),
                 if (receiver?.investorLevel != null)
